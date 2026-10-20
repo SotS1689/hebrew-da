@@ -1,0 +1,52 @@
+/* Page chrome for the web version (the view's own styles are styles.css). */
+
+html, body { margin: 0; height: 100%; }
+body { background: #f8fafc; overflow: hidden; }
+#app { height: 100vh; height: 100dvh; }
+#app > .hda-view { height: 100%; }
+
+.hda-view .web-notice {
+	position: fixed; right: 16px; bottom: 16px; z-index: 1000; max-width: min(420px, calc(100vw - 32px));
+	background: var(--da-text); color: var(--da-bg);
+	padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.4;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+}
+
+.hda-view .web-menu {
+	position: fixed; z-index: 1000; min-width: 160px; max-height: 80vh; overflow: auto;
+	background: var(--da-surface); color: var(--da-text);
+	border: 1px solid var(--da-border); border-radius: 8px; padding: 4px;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, .18); font-size: calc(13px * var(--da-ui-scale));
+}
+.hda-view .web-menu-item { display: flex; gap: 6px; padding: 5px 10px; cursor: pointer; border-radius: 4px; white-space: nowrap; }
+.hda-view .web-menu-item:hover { background: var(--da-row-bg); }
+.hda-view .web-menu-check { width: 1em; color: var(--da-accent); }
+.hda-view .web-menu-sep { height: 1px; background: var(--da-border); margin: 4px 0; }
+
+/* Dialogs: the confirm dialog's plain buttons, and Settings. */
+.hda-view .web-modal .da-modal-body p { margin: 0 0 12px; line-height: 1.5; }
+.hda-view .web-modal .hda-prompt-buttons { flex-wrap: wrap; }
+.hda-view .web-modal .hda-prompt-buttons > button:not(.da-btn) {
+	padding: 6px 14px; border-radius: 6px; border: 1px solid var(--da-border-strong);
+	background: var(--da-surface); color: var(--da-text);
+}
+.hda-view .web-modal .hda-prompt-buttons > button.mod-warning { background: var(--da-danger); border-color: var(--da-danger); color: #fff; }
+.hda-view .web-modal .hda-prompt-buttons > button.mod-warning:hover { background: var(--da-danger-hover); }
+
+.hda-view .web-settings .da-modal-title { margin: 0 0 8px; }
+.hda-view .web-setting { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px solid var(--da-border); }
+.hda-view .web-setting-text { flex: 1; min-width: 0; }
+.hda-view .web-setting-name { font-weight: 600; }
+.hda-view .web-setting-desc { color: var(--da-muted); font-size: .85em; margin-top: 2px; }
+.hda-view .web-setting-control { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.hda-view .web-setting-control select,
+.hda-view .web-setting-control input[type="text"] {
+	background: var(--da-surface); color: var(--da-text);
+	border: 1px solid var(--da-border-strong); border-radius: 6px; padding: 4px 6px; font: inherit;
+}
+.hda-view .web-setting-control input[type="text"] { width: 12em; }
+.hda-view .web-setting-value { min-width: 2.5em; text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 600px) {
+	.hda-view .web-setting { flex-direction: column; align-items: stretch; gap: 6px; }
+}

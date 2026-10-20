@@ -1,0 +1,30 @@
+# Pushing a version tag (e.g. 0.1.1, no "v") builds the plugin and creates
+# the GitHub Release that Obsidian installs from: main.js, manifest.json,
+# styles.css attached as separate files.
+name: Release Obsidian plugin
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          gh release create "$tag" main.js manifest.json styles.css --title "$tag" --generate-notes

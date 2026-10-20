@@ -1,0 +1,23 @@
+{
+	"name": "hebrew-da-obsidian",
+	"version": "0.1.0",
+	"description": "Hebrew prose discourse analysis (text-linguistic clause worksheet) for Obsidian",
+	"private": true,
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "node esbuild.config.mjs production",
+		"harness": "node esbuild.config.mjs harness",
+		"web": "node esbuild.config.mjs web"
+	},
+	"dependencies": {
+		"html2canvas": "^1.4.1",
+		"jszip": "^3.10.1"
+	},
+	"devDependencies": {
+		"@types/node": "^20.0.0",
+		"builtin-modules": "^3.3.0",
+		"esbuild": "^0.19.0",
+		"obsidian": "^1.4.11",
+		"typescript": "^5.4.0"
+	}
+}

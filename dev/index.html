@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hebrew DA harness</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+	html, body { margin: 0; height: 100%; }
+	#app { height: 100vh; }
+	#app > .hda-view { height: 100%; }
+	.shim-notice { position: fixed; right: 16px; bottom: 16px; z-index: 999; background: #222; color: #fff; padding: 8px 14px; border-radius: 8px; font: 13px system-ui; }
+	.shim-menu { position: fixed; z-index: 999; background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 4px; box-shadow: 0 6px 20px rgba(0,0,0,.18); font: 13px system-ui; max-height: 80vh; overflow: auto; }
+	.shim-menu-item { padding: 4px 12px; white-space: pre; cursor: pointer; border-radius: 4px; }
+	.shim-menu-item:hover { background: #eef2ff; }
+	.shim-menu-sep { height: 1px; background: #e5e7eb; margin: 4px 0; }
+	.shim-modal { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; z-index: 900; }
+	.shim-modal-content { background: #fff; padding: 20px; border-radius: 12px; min-width: 320px; font: 14px system-ui; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="harness.js"></script>
+</body>
+</html>

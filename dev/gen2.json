@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "passage": "Genesis 2:18-25",
+  "clauses": [
+    {
+      "id": "mvgncclz-1opda",
+      "he": "וַ֙יֹּאמֶר֙ יְהוָ֣ה אֱלֹהִ֔ים",
+      "en": "And the Lord God said,",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml.",
+      "verse": "18"
+    },
+    {
+      "id": "mvgncclz-27e8b",
+      "he": "לֹא־ט֛וֹב",
+      "en": "\"It is not good",
+      "depth": 1,
+      "line": "M",
+      "conj": "Ø",
+      "pattern": "SNC (implied היה)",
+      "notes": "Asyn. Bgn Dx."
+    },
+    {
+      "id": "mvgncclz-3w12n",
+      "he": "הֱי֥וֹת הָֽאָדָ֖ם לְבַדּ֑וֹ",
+      "en": "for man to be alone.",
+      "depth": 1,
+      "line": "M2",
+      "conj": "Ø",
+      "pattern": "IC",
+      "notes": "Specification"
+    },
+    {
+      "id": "mvgncclz-4bf9c",
+      "he": "אֶֽעֱשֶׂהּ־לּ֥וֹ עֵ֖זֶר כְּנֶגְדּֽוֹ׃",
+      "en": "I will make for him a helper suitible for him.\"",
+      "depth": 1,
+      "line": "M",
+      "conj": "Ø",
+      "pattern": "Yiqtol (indic)",
+      "notes": "Cont. Ml. Dx. Future Prediction"
+    },
+    {
+      "id": "mvgncclz-55l5f",
+      "he": "וַיִּצֶר֩ יְהוָ֙ה אֱלֹהִ֜ים מִן־הָֽאֲדָמָ֗ה כָּל־חַיַּ֤ת הַשָּׂדֶה֙ וְאֵת֙ כָּל־ע֣וֹף הַשָּׁמַ֔יִם",
+      "en": "And the LORD God formed from the earth every living thing of the field and every bird of the heavens",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml.",
+      "verse": "19"
+    },
+    {
+      "id": "mvgncclz-6bedx",
+      "he": "וַיָּבֵא֙ אֶל־הָ֣אָדָ֔ם לִרְא֖וֹת",
+      "en": "and He brought [each one] to man to see",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml."
+    },
+    {
+      "id": "mvgncclz-7x1j3",
+      "he": "מַה־יִּקְרָא־ל֑וֹ",
+      "en": "what he would call it.",
+      "depth": 0,
+      "line": "O1",
+      "conj": "Ø",
+      "pattern": "X-yiqtol (indic)",
+      "notes": "Off. Asyn. Supportive"
+    },
+    {
+      "id": "mvgncclz-8xo3y",
+      "he": "וְכֹל֩ אֲשֶׁ֙ר יִקְרָא־ל֧וֹ הָֽאָדָ֛ם נֶ֥פֶשׁ חַיָּ֖ה",
+      "en": "And everything which man called the living creature,",
+      "depth": 0,
+      "line": "O1",
+      "conj": "ו",
+      "pattern": "X-yiqtol (indic)",
+      "notes": "Off1 Bgd Info"
+    },
+    {
+      "id": "mvgncclz-9o466",
+      "he": "ה֥וּא שְׁמֽוֹ׃",
+      "en": "that [was] its name.",
+      "depth": 0,
+      "line": "O2",
+      "conj": "Ø",
+      "pattern": "SNC (implied היה)",
+      "notes": "Off2 Result"
+    },
+    {
+      "id": "mvgncclz-anzp8",
+      "he": "וַיִּקְרָ֙א הָֽאָדָ֜ם שֵׁמ֗וֹת לְכָל־הַבְּהֵמָה֙ וּלְע֣וֹף הַשָּׁמַ֔יִם וּלְכֹ֖ל חַיַּ֣ת הַשָּׂדֶ֑ה",
+      "en": "And the man called the names of every beast and bird of the heavens and every living thing of the field.",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml.",
+      "verse": "20"
+    },
+    {
+      "id": "mvgncclz-bed3b",
+      "he": "וּלְאָדָ֕ם לֹֽא־מָצָ֥א עֵ֖זֶר כְּנֶגְדּֽוֹ׃",
+      "en": "But man did not find a helper suitible for him.",
+      "depth": 0,
+      "line": "O1",
+      "conj": "ו",
+      "pattern": "We-X-qatal",
+      "notes": "Off1 Bgd Info. Climactic Marker"
+    },
+    {
+      "id": "mvgncclz-c8lfc",
+      "he": "וַיַּפֵּל֩ יְהוָ֙ה אֱלֹהִ֧ים׀ תַּרְדֵּמָ֛ה עַל־הָאָדָ֖ם",
+      "en": "So the LORD God caused a deep sleep to fall upon the man",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml.",
+      "verse": "21"
+    },
+    {
+      "id": "mvgncclz-doaqo",
+      "he": "וַיִּישָׁ֑ן",
+      "en": "and he slept.",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml."
+    },
+    {
+      "id": "mvgncclz-ei6lg",
+      "he": "וַיִּקַּ֗ח אַחַת֙ מִצַּלְעֹתָ֔יו",
+      "en": "And He took one of his ribs",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml."
+    },
+    {
+      "id": "mvgncclz-fboht",
+      "he": "וַיִּסְגֹּ֥ר בָּשָׂ֖ר תַּחְתֶּֽנָּה׃",
+      "en": "and closed up the flesh behind it.",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml."
+    },
+    {
+      "id": "mvgncclz-gjpez",
+      "he": "וַיִּבֶן֩ יְהוָ֙ה אֱלֹהִ֧ים׀ אֶֽת־הַצֵּלָ֛ע (אֲשֶׁר־לָקַ֥ח מִן־הָֽאָדָ֖ם) לְאִשָּׁ֑ה",
+      "en": "And the LORD God built the rib (which he had taken out of man) into a woman,",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml.",
+      "verse": "22"
+    },
+    {
+      "id": "mvgncclz-hy9bb",
+      "he": "וַיְבִאֶ֖הָ אֶל־הָֽאָדָֽם׃",
+      "en": "and He brought her to the man.",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml."
+    },
+    {
+      "id": "mvgncclz-iyf7e",
+      "he": "וַיֹּאמֶר֘ הָֽאָדָם֒",
+      "en": "And the man said,",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml.",
+      "verse": "23"
+    },
+    {
+      "id": "mvgncclz-jp3oa",
+      "he": "זֹ֣את הַפַּ֗עַם עֶ֚צֶם מֵֽעֲצָמַ֔י וּבָשָׂ֖ר מִבְּשָׂרִ֑י",
+      "en": "\"This at last [is] bone of my bone and flesh of my flesh,",
+      "depth": 1,
+      "line": "M",
+      "conj": "Ø",
+      "pattern": "SNC",
+      "notes": "Asyn. Bgn Dx."
+    },
+    {
+      "id": "mvgncclz-kf4xt",
+      "he": "לְזֹאת֙ יִקָּרֵ֣א אִשָּׁ֔ה",
+      "en": "therefore, she will be called woman",
+      "depth": 1,
+      "line": "M",
+      "conj": "ל",
+      "pattern": "X-yiqtol (indic)",
+      "notes": "Cont. Ml. Result"
+    },
+    {
+      "id": "mvgncclz-lp9ds",
+      "he": "כִּ֥י מֵאִ֖ישׁ לֻֽקֳחָה־זֹּֽאת׃",
+      "en": "for from man she was taken.\"",
+      "depth": 1,
+      "line": "M2",
+      "conj": "כי",
+      "pattern": "X-qatal",
+      "notes": "Ml2, Causal"
+    },
+    {
+      "id": "mvgncclz-m3nov",
+      "he": "עַל־כֵּן֙ יַֽעֲזָב־אִ֔ישׁ אֶת־אָבִ֖יו וְאֶת־אִמּ֑וֹ",
+      "en": "Because of this, man will leave his father and mother",
+      "depth": 0,
+      "line": "O1",
+      "conj": "Ø",
+      "pattern": "X-yiqtol (indic)",
+      "notes": "Off1 Bgd. Info, inference",
+      "verse": "24"
+    },
+    {
+      "id": "mvgncclz-nt5c8",
+      "he": "וְדָבַ֣ק בְּאִשְׁתּ֔וֹ",
+      "en": "and cling to his wife,",
+      "depth": 0,
+      "line": "O1",
+      "conj": "ו",
+      "pattern": "Weqatal",
+      "notes": "Off1 Habitual Action"
+    },
+    {
+      "id": "mvgncclz-oqp8j",
+      "he": "וְהָי֖וּ לְבָשָׂ֥ר אֶחָֽד׃",
+      "en": "and they will be one flesh.",
+      "depth": 0,
+      "line": "O1",
+      "conj": "ו",
+      "pattern": "Weqatal",
+      "notes": "Off1 Habitual Action"
+    },
+    {
+      "id": "mvgncclz-p4nop",
+      "he": "וַיִּֽהְי֤וּ שְׁנֵיהֶם֙ עֲרוּמִּ֔ים הָֽאָדָ֖ם וְאִשְׁתּ֑וֹ",
+      "en": "And both the man and the woman were naked",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "Wayyiqtol",
+      "notes": "Cont. Ml.",
+      "verse": "25"
+    },
+    {
+      "id": "mvgncclz-q8x73",
+      "he": "וְלֹ֖א יִתְבֹּשָֽׁשׁוּ׃",
+      "en": "but they were not ashamed.",
+      "depth": 0,
+      "line": "M",
+      "conj": "ו",
+      "pattern": "We-לא-yiqtol",
+      "notes": "Cont. Ml. Contrast"
+    }
+  ],
+  "zoomLevel": 1
+}
