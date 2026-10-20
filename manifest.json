@@ -1,7 +1,7 @@
 {
 	"id": "hebrew-da",
 	"name": "Hebrew Discourse Analysis",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"minAppVersion": "1.4.10",
 	"description": "Lay out Hebrew prose clause by clause (Hx/Dx, mainline/offline) with conjunction, predicate pattern, and discourse-function notes.",
 	"author": "SotS1689",
