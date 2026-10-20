@@ -339,22 +339,37 @@ export function toHebrewConj(text: string): string {
 	}).join("");
 }
 
-export const PREDICATE_PATTERNS: { value: string; hint: string }[] = [
+// `keys` are Latin transliterations ("lo", "al") so the Hebrew-negative
+// patterns can be found without switching keyboards; a key that starts with
+// what's typed puts the pattern at the top of the suggestions, and one with a
+// later segment that does ("lo" in "we-x-lo-qatal") comes next.
+export const PREDICATE_PATTERNS: { value: string; hint: string; keys?: string[] }[] = [
 	{ value: "Wayyiqtol", hint: "waw consecutive + imperfect" },
 	{ value: "Qatal", hint: "perfect" },
 	{ value: "X-qatal", hint: "non-verbal + perfect" },
 	{ value: "We-X-qatal", hint: "waw + non-verbal + perfect" },
 	{ value: "Weqatal", hint: "waw consecutive + perfect" },
-	{ value: "We-לא-qatal", hint: "waw + לא + perfect" },
+	{ value: "We-לא-qatal", hint: "waw + לא + perfect", keys: ["we-lo-qatal"] },
+	{ value: "לא-qatal", hint: "לא + perfect", keys: ["lo-qatal"] },
+	{ value: "אל-qatal", hint: "אל + perfect", keys: ["al-qatal"] },
+	{ value: "X-לא-qatal", hint: "non-verbal + לא + perfect", keys: ["x-lo-qatal"] },
+	{ value: "We-X-לא-qatal", hint: "waw + non-verbal + לא + perfect", keys: ["we-x-lo-qatal"] },
 	{ value: "Yiqtol (indic)", hint: "imperfect (indicative)" },
 	{ value: "X-yiqtol (indic)", hint: "non-verbal + imperfect (indicative)" },
 	{ value: "We-X-yiqtol", hint: "waw + non-verbal + imperfect" },
 	{ value: "Weyiqtol", hint: "waw + imperfect" },
-	{ value: "We-לא-yiqtol", hint: "waw + לא + imperfect/jussive/cohortative" },
+	{ value: "We-לא-yiqtol", hint: "waw + לא + imperfect/jussive/cohortative", keys: ["we-lo-yiqtol"] },
+	{ value: "לא-yiqtol", hint: "לא + imperfect", keys: ["lo-yiqtol"] },
+	{ value: "אל-yiqtol", hint: "אל + jussive (prohibition)", keys: ["al-yiqtol"] },
+	{ value: "X-לא-yiqtol", hint: "non-verbal + לא + imperfect", keys: ["x-lo-yiqtol"] },
+	{ value: "We-X-לא-yiqtol", hint: "waw + non-verbal + לא + imperfect", keys: ["we-x-lo-yiqtol"] },
+	{ value: "X-אל-yiqtol", hint: "non-verbal + אל + jussive (prohibition)", keys: ["x-al-yiqtol"] },
+	{ value: "We-X-אל-yiqtol", hint: "waw + non-verbal + אל + jussive (prohibition)", keys: ["we-x-al-yiqtol"] },
 	{ value: "Yiqtol (jsv/chrt)", hint: "jussive/cohortative" },
 	{ value: "X-yiqtol (juss/cohrt)", hint: "non-verbal + jussive/cohortative" },
 	{ value: "Qetol", hint: "imperative" },
 	{ value: "X-qetol", hint: "non-verbal + imperative" },
+	{ value: "אל-qetol", hint: "אל + imperative", keys: ["al-qetol"] },
 	{ value: "Weqetol", hint: "waw + imperative" },
 	{ value: "We-X-qetol", hint: "waw + non-verbal + imperative" },
 	{ value: "SNC", hint: "simple noun clause (implied היה, or participle)" },
@@ -380,6 +395,7 @@ export function referenceSectionFor(pattern: string, depth: number): string | nu
 	}
 	if (p.includes("yiqtol")) {
 		if (/^we-?(לא-?)?yiqtol/.test(p)) return "weyiqtol-dx";
+		if (/אל-?yiqtol/.test(p)) return "jussive-dx";
 		if (/juss|cohort|cohrt|jsv|chrt/.test(p)) return "jussive-dx";
 		return tt === "hx" ? "xyiqtol-hx" : "xyiqtol-dx";
 	}

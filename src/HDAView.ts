@@ -1027,9 +1027,15 @@ export class HDAView extends TextFileView {
 
 	// ---------- suggestions for Conj / Pattern ----------
 
-	private showSuggest(input: HTMLTextAreaElement, clauseId: string, all: { value: string; hint?: string }[], typed: boolean): void {
+	private showSuggest(input: HTMLTextAreaElement, clauseId: string, all: { value: string; hint?: string; keys?: string[] }[], typed: boolean): void {
 		const q = input.value.trim().toLowerCase();
-		const options = typed && q ? all.filter(o => o.value.toLowerCase().includes(q) || (o.hint ?? "").toLowerCase().includes(q)) : all;
+		let options = all;
+		if (typed && q) {
+			const keyStart = (o: { keys?: string[] }) => (o.keys ?? []).some(k => k.startsWith(q));
+			const keySegment = (o: { keys?: string[] }) => !keyStart(o) && (o.keys ?? []).some(k => k.includes("-" + q));
+			const rest = all.filter(o => !keyStart(o) && !keySegment(o) && (o.value.toLowerCase().includes(q) || (o.hint ?? "").toLowerCase().includes(q)));
+			options = [...all.filter(keyStart), ...all.filter(keySegment), ...rest];
+		}
 		if (!options.length) { this.hideSuggest(); return; }
 		const exact = options.findIndex(o => o.value === input.value);
 		this.suggest = { input, clauseId, options, active: typed && q ? 0 : exact, typed };
@@ -1043,7 +1049,7 @@ export class HDAView extends TextFileView {
 		el.empty();
 		s.options.forEach((o, i) => {
 			const item = el.createDiv({ cls: "hda-suggest-item" + (i === s.active ? " is-active" : "") });
-			item.createSpan({ cls: "hda-suggest-value", text: o.value, attr: { dir: "auto" } });
+			item.createSpan({ cls: "hda-suggest-value", text: o.value, attr: { dir: "ltr" } });
 			if (o.hint) item.createSpan({ cls: "hda-suggest-hint", text: o.hint });
 			item.addEventListener("mousedown", e => { e.preventDefault(); this.pickSuggestion(i); });
 		});
