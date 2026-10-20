@@ -65,7 +65,7 @@ export class StoryBoard {
 		this.el = parent.createDiv({ cls: "hds-board" });
 		this.el.tabIndex = -1;
 		this.plane = this.el.createDiv({ cls: "hds-plane" });
-		this.svg = document.createElementNS(SVG_NS, "svg");
+		this.svg = this.el.doc.createElementNS(SVG_NS, "svg");
 		this.svg.classList.add("hds-links");
 		this.plane.appendChild(this.svg);
 		this.labelsEl = this.plane.createDiv({ cls: "hds-link-labels" });
@@ -166,7 +166,7 @@ export class StoryBoard {
 			if (text === undefined) return;
 			e.preventDefault();
 			const clean = key === "verses" || key === "fn" || key === "title" ? text.replace(/\s*\n\s*/g, " ") : text;
-			document.execCommand("insertText", false, clean);
+			this.el.doc.execCommand("insertText", false, clean);
 		});
 		return el;
 	}
@@ -183,9 +183,9 @@ export class StoryBoard {
 
 	private focusEnd(el: HTMLElement): void {
 		el.focus();
-		const sel = window.getSelection();
+		const sel = this.el.win.getSelection();
 		if (!sel) return;
-		const r = document.createRange();
+		const r = this.el.doc.createRange();
 		r.selectNodeContents(el);
 		r.collapse(false);
 		sel.removeAllRanges();
@@ -205,9 +205,9 @@ export class StoryBoard {
 		while (svg.firstChild) svg.removeChild(svg.firstChild);
 		this.labelsEl.empty();
 
-		const defs = document.createElementNS(SVG_NS, "defs");
+		const defs = this.el.doc.createElementNS(SVG_NS, "defs");
 		for (const [id, cls] of [["hds-arrow", "hds-arrow-head"], ["hds-arrow-sel", "hds-arrow-head is-selected"]]) {
-			const marker = document.createElementNS(SVG_NS, "marker");
+			const marker = this.el.doc.createElementNS(SVG_NS, "marker");
 			marker.setAttribute("id", id);
 			marker.setAttribute("viewBox", "0 0 10 10");
 			marker.setAttribute("refX", "9");
@@ -215,7 +215,7 @@ export class StoryBoard {
 			marker.setAttribute("markerWidth", "7");
 			marker.setAttribute("markerHeight", "7");
 			marker.setAttribute("orient", "auto-start-reverse");
-			const p = document.createElementNS(SVG_NS, "path");
+			const p = this.el.doc.createElementNS(SVG_NS, "path");
 			p.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
 			p.setAttribute("class", cls);
 			marker.appendChild(p);
@@ -233,11 +233,11 @@ export class StoryBoard {
 			if (!a || !b) continue;
 			const { d, mid } = this.route(a, b);
 			const selected = link.id === this.selectedLink;
-			const hit = document.createElementNS(SVG_NS, "path");
+			const hit = this.el.doc.createElementNS(SVG_NS, "path");
 			hit.setAttribute("d", d);
 			hit.setAttribute("class", "hds-link-hit");
 			hit.dataset.linkId = link.id;
-			const path = document.createElementNS(SVG_NS, "path");
+			const path = this.el.doc.createElementNS(SVG_NS, "path");
 			path.setAttribute("d", d);
 			path.setAttribute("class", "hds-link" + (selected ? " is-selected" : ""));
 			path.setAttribute("marker-end", `url(#${selected ? "hds-arrow-sel" : "hds-arrow"})`);
@@ -591,15 +591,15 @@ export class StoryBoard {
 	// ---------- focus across re-renders ----------
 
 	private captureFocus(): { id: string; field: string; caret: number } | null {
-		const active = document.activeElement as HTMLElement | null;
+		const active = this.el.doc.activeElement as HTMLElement | null;
 		if (!active || !this.plane.contains(active)) return null;
 		const id = active.closest<HTMLElement>(".hds-block")?.dataset.id;
 		const field = active.dataset.field;
 		if (!id || !field) return null;
-		const sel = window.getSelection();
+		const sel = this.el.win.getSelection();
 		let caret = 0;
 		if (sel && sel.rangeCount && active.contains(sel.anchorNode)) {
-			const pre = document.createRange();
+			const pre = this.el.doc.createRange();
 			pre.selectNodeContents(active);
 			pre.setEnd(sel.getRangeAt(0).startContainer, sel.getRangeAt(0).startOffset);
 			caret = pre.toString().length;
@@ -612,14 +612,14 @@ export class StoryBoard {
 		const el = this.blockEl(f.id)?.querySelector<HTMLElement>(`[data-field="${f.field}"]`);
 		if (!el) return;
 		el.focus();
-		const sel = window.getSelection();
+		const sel = this.el.win.getSelection();
 		if (!sel) return;
-		const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+		const walker = this.el.doc.createTreeWalker(el, NodeFilter.SHOW_TEXT);
 		let remaining = f.caret;
 		for (let n = walker.nextNode(); n; n = walker.nextNode()) {
 			const len = n.textContent?.length ?? 0;
 			if (remaining <= len) {
-				const r = document.createRange();
+				const r = this.el.doc.createRange();
 				r.setStart(n, remaining);
 				r.collapse(true);
 				sel.removeAllRanges();
@@ -696,7 +696,7 @@ export class StoryBoard {
 				return;
 			} else {
 				e.preventDefault();
-				(document.activeElement as HTMLElement | null)?.blur?.();
+				(this.el.doc.activeElement as HTMLElement | null)?.blur?.();
 				this.el.focus({ preventScroll: true });
 				this.drag = { kind: "move", id, ...base, origX: b.x, origY: b.y };
 				this.selectBlock(id);
@@ -704,21 +704,22 @@ export class StoryBoard {
 		} else {
 			// Background: clear the selection and pan (without selecting text).
 			e.preventDefault();
-			window.getSelection()?.removeAllRanges();
-			(document.activeElement as HTMLElement | null)?.blur?.();
+			this.el.win.getSelection()?.removeAllRanges();
+			(this.el.doc.activeElement as HTMLElement | null)?.blur?.();
 			this.el.focus({ preventScroll: true });
 			if (this.hasSelection()) this.clearSelection();
 			this.drag = { kind: "pan", ...base, origX: this.data.panX, origY: this.data.panY };
 			this.el.addClass("is-panning");
 		}
+		const doc = this.el.doc;
 		const move = (ev: MouseEvent) => this.onMouseMove(ev);
 		const up = (ev: MouseEvent) => {
-			document.removeEventListener("mousemove", move);
-			document.removeEventListener("mouseup", up);
+			doc.removeEventListener("mousemove", move);
+			doc.removeEventListener("mouseup", up);
 			this.onMouseUp(ev);
 		};
-		document.addEventListener("mousemove", move);
-		document.addEventListener("mouseup", up);
+		doc.addEventListener("mousemove", move);
+		doc.addEventListener("mouseup", up);
 	}
 
 	private onMouseMove(e: MouseEvent): void {
@@ -776,7 +777,7 @@ export class StoryBoard {
 	}
 
 	private startGhost(): void {
-		this.ghost = document.createElementNS(SVG_NS, "path");
+		this.ghost = this.el.doc.createElementNS(SVG_NS, "path");
 		this.ghost.setAttribute("class", "hds-link hds-link-ghost");
 		this.ghost.setAttribute("marker-end", "url(#hds-arrow-sel)");
 		this.svg.appendChild(this.ghost);
@@ -785,7 +786,7 @@ export class StoryBoard {
 
 	private updateGhost(fromEl: HTMLElement, e: MouseEvent): void {
 		if (!this.ghost) return;
-		const over = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest<HTMLElement>(".hds-block");
+		const over = (this.el.doc.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest<HTMLElement>(".hds-block");
 		const target = over && over !== fromEl ? over.dataset.id! : null;
 		if (target !== this.dropTarget) {
 			this.plane.querySelectorAll(".hds-block.is-drop-target").forEach(n => n.removeClass("is-drop-target"));

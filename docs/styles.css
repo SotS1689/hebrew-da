@@ -1521,7 +1521,7 @@
 }
 /* Themes that draw their own file icon in the gutter (e.g. AnuPpuccin's
    "file icons"): hide it on .hda rows and put the vav in its place. */
-.nav-file-title:has(> .hda-file-icon)::before {
+.nav-file-title.hda-file-row::before {
 	display: none !important;
 }
 .anp-file-icons .nav-file-title > .hda-file-icon {

@@ -124,6 +124,7 @@ export default class HebrewDAPlugin extends Plugin {
 
 	onunload(): void {
 		document.querySelectorAll(".hda-file-icon").forEach(el => el.remove());
+		document.querySelectorAll(".hda-file-row").forEach(el => el.removeClass("hda-file-row"));
 	}
 
 	// File Explorer: give .hda files the same vav icon as the ribbon/command.
@@ -151,8 +152,10 @@ export default class HebrewDAPlugin extends Plugin {
 				const span = createSpan({ cls: "hda-file-icon" });
 				setIcon(span, HDA_ICON);
 				title.prepend(span);
+				title.addClass("hda-file-row");
 			} else if (!isHda && icon) {
 				icon.remove();
+				title.removeClass("hda-file-row");
 			}
 		});
 	}

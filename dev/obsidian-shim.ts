@@ -40,6 +40,10 @@ NP.setAttr = function (k: string, v: string) { this.setAttribute(k, v); };
 NP.appendText = function (t: string) { this.appendChild(document.createTextNode(t)); };
 P.hide = function () { this.style.display = "none"; };
 P.show = function () { this.style.display = ""; };
+// Cross-window helpers (popout windows); the harness has only one window.
+NP.instanceOf = function (type: new () => unknown) { return this instanceof type; };
+Object.defineProperty(NP, "doc", { get() { return this.ownerDocument ?? document; }, configurable: true });
+Object.defineProperty(NP, "win", { get() { return (this.ownerDocument ?? document).defaultView ?? window; }, configurable: true });
 P.setCssStyles = function (s: Record<string, string>) { Object.assign(this.style, s); };
 
 const icons: Record<string, string> = {};

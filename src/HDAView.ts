@@ -95,10 +95,10 @@ class ConfirmModal extends Modal {
 
 // Caret position inside a plain-text contenteditable, as text offsets.
 function caretRange(el: HTMLElement): { start: number; end: number } | null {
-	const sel = window.getSelection();
+	const sel = el.win.getSelection();
 	if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) return null;
 	const range = sel.getRangeAt(0);
-	const pre = document.createRange();
+	const pre = el.doc.createRange();
 	pre.selectNodeContents(el);
 	pre.setEnd(range.startContainer, range.startOffset);
 	const start = pre.toString().length;
@@ -107,11 +107,11 @@ function caretRange(el: HTMLElement): { start: number; end: number } | null {
 }
 
 function setCaret(el: HTMLElement, offset: number): void {
-	const sel = window.getSelection();
+	const sel = el.win.getSelection();
 	if (!sel) return;
-	const range = document.createRange();
+	const range = el.doc.createRange();
 	let remaining = offset;
-	const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+	const walker = el.doc.createTreeWalker(el, NodeFilter.SHOW_TEXT);
 	let node: Node | null = walker.nextNode();
 	while (node) {
 		const len = node.textContent?.length ?? 0;
@@ -293,9 +293,9 @@ export class HDAView extends TextFileView {
 		// (e.g. AnuPpuccin's ".theme-dark.ctp-frappe", set by Style
 		// Settings), so the bare mode class alone would give the theme's
 		// default colors instead of the chosen ones.
-		const bodyDark = document.body.classList.contains("theme-dark");
+		const bodyDark = this.contentEl.doc.body.classList.contains("theme-dark");
 		if (s.colorTheme === "obsidian" && dark !== bodyDark) {
-			this.mirroredClasses = Array.from(document.body.classList).filter(c => c !== "theme-dark" && c !== "theme-light" && !root.classList.contains(c));
+			this.mirroredClasses = Array.from(this.contentEl.doc.body.classList).filter(c => c !== "theme-dark" && c !== "theme-light" && !root.classList.contains(c));
 			root.classList.add(...this.mirroredClasses, dark ? "theme-dark" : "theme-light");
 		}
 		const sw = root.querySelector<HTMLElement>(".hda-mode-switch .da-switch");
@@ -314,7 +314,7 @@ export class HDAView extends TextFileView {
 
 	private isDark(): boolean {
 		const mode = this.plugin.settings.mode;
-		return mode === "dark" || (mode !== "light" && document.body.classList.contains("theme-dark"));
+		return mode === "dark" || (mode !== "light" && this.contentEl.doc.body.classList.contains("theme-dark"));
 	}
 
 	// ---------- DOM construction ----------
@@ -341,10 +341,9 @@ export class HDAView extends TextFileView {
 		const themeSel = right.createEl("select", { cls: "da-theme-select", attr: { title: "Color theme", "aria-label": "Color theme" } });
 		for (const t of COLOR_THEMES) themeSel.createEl("option", { text: t.label, attr: { value: t.id } });
 		themeSel.value = this.plugin.settings.colorTheme;
-		themeSel.addEventListener("change", async () => {
+		themeSel.addEventListener("change", () => {
 			this.plugin.settings.colorTheme = themeSel.value;
-			await this.plugin.saveSettings();
-			this.plugin.refreshAllViews();
+			this.saveSettingsAndRefresh();
 		});
 		// Light/dark switch, as in DA-Tool's web version (on = light).
 		const modeWrap = right.createDiv({ cls: "hda-mode-switch", attr: { title: "Light / dark mode" } });
@@ -352,10 +351,9 @@ export class HDAView extends TextFileView {
 		const modeBtn = modeWrap.createEl("button", { cls: "da-switch", attr: { role: "switch", "aria-label": "Light mode" } });
 		modeBtn.createSpan({ cls: "da-switch-thumb" });
 		modeWrap.createSpan({ cls: "hda-mode-icon", text: "☀️" });
-		modeBtn.addEventListener("click", async () => {
+		modeBtn.addEventListener("click", () => {
 			this.plugin.settings.mode = this.isDark() ? "light" : "dark";
-			await this.plugin.saveSettings();
-			this.plugin.refreshAllViews();
+			this.saveSettingsAndRefresh();
 		});
 		const support = right.createEl("button", { cls: "da-btn da-btn-support", attr: { title: "Support this tool (Buy Me a Coffee)" } });
 		// Coffee mug icon, same as DA-Tool's and BibleSearch's Support button.
@@ -388,10 +386,9 @@ export class HDAView extends TextFileView {
 		this.zoomLabel = zoomRow.createSpan({ cls: "da-zoom-label", text: "100%" });
 		this.button(zoomRow, "+", "da-btn da-btn-icon-only", "Zoom in", () => this.setZoom(this.doc.zoomLevel + 0.1));
 		this.button(zoomRow, "↺", "da-btn da-btn-icon-only", "Reset zoom", () => this.setZoom(1));
-		const guidesBtn = this.button(toolbar, "Guides", "da-btn da-btn-icon-only hda-toggle-btn", "Show the indent columns", async () => {
+		const guidesBtn = this.button(toolbar, "Guides", "da-btn da-btn-icon-only hda-toggle-btn", "Show the indent columns", () => {
 			this.plugin.settings.showGuides = !this.plugin.settings.showGuides;
-			await this.plugin.saveSettings();
-			this.plugin.refreshAllViews();
+			this.saveSettingsAndRefresh();
 		});
 		guidesBtn.addClass("hda-guides-btn");
 		this.button(toolbar, "Columns ▾", "da-btn da-btn-icon-only", "Show or hide columns", (e) => this.openColumnsMenu(e as MouseEvent));
@@ -511,8 +508,13 @@ export class HDAView extends TextFileView {
 
 	toggleSidebar(): void {
 		this.plugin.settings.sidebarHidden = !this.plugin.settings.sidebarHidden;
-		void this.plugin.saveSettings();
-		this.plugin.refreshAllViews();
+		this.saveSettingsAndRefresh();
+	}
+
+	private saveSettingsAndRefresh(): void {
+		this.plugin.saveSettings()
+			.catch(err => { console.error("Hebrew DA: couldn't save settings", err); new Notice("Couldn't save the Hebrew DA settings."); })
+			.finally(() => this.plugin.refreshAllViews());
 	}
 
 	// ---------- rendering ----------
@@ -537,7 +539,7 @@ export class HDAView extends TextFileView {
 		grid.toggleClass("hda-show-guides", !!s.showGuides);
 		this.contentEl.querySelector(".hda-guides-btn")?.toggleClass("hda-toggle-on", !!s.showGuides);
 		this.zoomLabel.setText(`${Math.round(zoom * 100)}%`);
-		if (document.activeElement !== this.passageInput) this.passageInput.value = this.doc.passage;
+		if (this.contentEl.doc.activeElement !== this.passageInput) this.passageInput.value = this.doc.passage;
 
 		const basePx = BASE_FONT_PX * zoom;
 		grid.style.setProperty("--hda-base", `${basePx}px`);
@@ -711,12 +713,12 @@ export class HDAView extends TextFileView {
 	// ---------- focus bookkeeping across re-renders ----------
 
 	private captureFocus(): { id: string; field: Field; caret: number } | null {
-		const active = document.activeElement as HTMLElement | null;
+		const active = this.contentEl.doc.activeElement as HTMLElement | null;
 		if (!active || !this.gridEl.contains(active)) return null;
 		const id = active.closest<HTMLElement>(".hda-clause")?.dataset.id;
 		const field = active.dataset.field as Field | undefined;
 		if (!id || !field) return null;
-		const caret = active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement ? active.selectionStart ?? 0 : caretRange(active)?.start ?? 0;
+		const caret = active.instanceOf(HTMLInputElement) || active.instanceOf(HTMLTextAreaElement) ? active.selectionStart ?? 0 : caretRange(active)?.start ?? 0;
 		return { id, field, caret };
 	}
 
@@ -728,7 +730,7 @@ export class HDAView extends TextFileView {
 		const el = this.cellEl(id, field);
 		if (!el) return;
 		el.focus();
-		if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+		if (el.instanceOf(HTMLInputElement) || el.instanceOf(HTMLTextAreaElement)) {
 			const pos = caret === "end" ? el.value.length : caret;
 			el.setSelectionRange(pos, pos);
 		} else {
@@ -978,7 +980,7 @@ export class HDAView extends TextFileView {
 			if (!only) this.selected.add(id);
 			this.anchorId = id;
 		}
-		(document.activeElement as HTMLElement | null)?.blur();
+		(this.contentEl.doc.activeElement as HTMLElement | null)?.blur();
 		this.canvasEl.focus({ preventScroll: true });
 		this.syncSelectionClasses();
 	}
@@ -1015,10 +1017,9 @@ export class HDAView extends TextFileView {
 			menu.addItem(item => {
 				item.setTitle(name);
 				if (cols[key]) item.setIcon("check");
-				item.onClick(async () => {
+				item.onClick(() => {
 					cols[key] = !cols[key];
-					await this.plugin.saveSettings();
-					this.plugin.refreshAllViews();
+					this.saveSettingsAndRefresh();
 				});
 			});
 		}
@@ -1188,7 +1189,7 @@ export class HDAView extends TextFileView {
 		this.canvasEl.tabIndex = -1;
 		this.registerDomEvent(this.contentEl, "keydown", (e: KeyboardEvent) => {
 			const target = e.target as HTMLElement;
-			const inSidebarField = target.closest(".hda-sidebar") && (target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement);
+			const inSidebarField = target.closest(".hda-sidebar") && (target.instanceOf(HTMLTextAreaElement) || target.instanceOf(HTMLInputElement));
 			const mod = e.ctrlKey || e.metaKey;
 			if (mod && !inSidebarField && !e.altKey) {
 				const k = e.key.toLowerCase();
@@ -1196,7 +1197,7 @@ export class HDAView extends TextFileView {
 				if (k === "y" || (k === "z" && e.shiftKey)) { e.preventDefault(); this.redo(); return; }
 			}
 			// Keys for selected clauses or story blocks (focus not in a text field).
-			const editing = target.isContentEditable || target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement;
+			const editing = target.isContentEditable || target.instanceOf(HTMLInputElement) || target.instanceOf(HTMLTextAreaElement) || target.instanceOf(HTMLSelectElement);
 			if (editing) return;
 			if (this.doc.tab === "story") {
 				if (!this.story.hasSelection()) return;
@@ -1258,9 +1259,10 @@ export class HDAView extends TextFileView {
 		head.createEl("h2", { cls: "da-modal-title", text: title });
 		const closeBtn = head.createEl("button", { cls: "da-modal-close", text: "×", attr: { "aria-label": "Close" } });
 		const body = modal.createDiv({ cls: "da-modal-body" });
-		const close = () => { backdrop.remove(); document.removeEventListener("keydown", onKey, true); };
+		const doc = backdrop.doc;
+		const close = () => { backdrop.remove(); doc.removeEventListener("keydown", onKey, true); };
 		const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); close(); } };
-		document.addEventListener("keydown", onKey, true);
+		doc.addEventListener("keydown", onKey, true);
 		closeBtn.addEventListener("click", close);
 		backdrop.addEventListener("mousedown", e => { if (e.target === backdrop) close(); });
 		build(body, close);
