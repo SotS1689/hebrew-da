@@ -2,8 +2,7 @@
 //
 // FUNCTION_SECTIONS is the "Function of Communication" sheet from the DA
 // Template workbook (OTHT I), which the spreadsheet's "?" links jumped into;
-// spelling slips in the sheet are corrected. The method steps are a summary
-// of J. Gibson's "Discourse Analysis of Hebrew Prose" notes, not a copy.
+// spelling slips in the sheet are corrected.
 
 export interface FunctionGroup {
 	kind: string;
@@ -135,8 +134,6 @@ export interface InstructionBlock {
 	steps?: { title: string; sub?: string[] }[];
 	table?: string[][];
 }
-
-export const METHOD_SOURCE = "Summarized from J. Gibson, “Discourse Analysis of Hebrew Prose” (OTHT I notes).";
 
 export const METHOD_INSTRUCTIONS: InstructionBlock[] = [
 	{ h: "What this is for" },

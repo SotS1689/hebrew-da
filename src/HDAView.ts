@@ -6,7 +6,7 @@ import {
 	referenceSectionFor, splitPasted, startVerseOf, textType, toHebrewConj,
 } from "./model";
 import { StoryBoard } from "./StoryBoard";
-import { FUNCTION_SECTIONS, InstructionBlock, METHOD_INSTRUCTIONS, METHOD_SOURCE, TOOL_HELP } from "./reference";
+import { FUNCTION_SECTIONS, InstructionBlock, METHOD_INSTRUCTIONS, TOOL_HELP } from "./reference";
 
 export const VIEW_TYPE_HDA = "hebrew-da-view";
 
@@ -1308,7 +1308,6 @@ export class HDAView extends TextFileView {
 		this.openModal("Discourse Analysis of Hebrew Prose", "da-modal-medium", body => {
 			const wrap = body.createDiv({ cls: "da-instructions" });
 			for (const block of METHOD_INSTRUCTIONS) this.renderInstructionBlock(wrap, block);
-			wrap.createEl("p", { cls: "hda-source", text: METHOD_SOURCE });
 		});
 	}
 

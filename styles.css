@@ -1504,12 +1504,6 @@
 	font-weight: 600;
 	white-space: nowrap;
 }
-.hda-view .hda-source {
-	margin-top: 16px;
-	color: var(--da-muted);
-	font-size: 0.78rem;
-	font-style: italic;
-}
 
 /* ---------- File Explorer icon for .hda files ---------- */
 
