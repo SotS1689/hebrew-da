@@ -1226,8 +1226,15 @@
 	text-align: right;
 }
 .hda-view .hda-en {
+	/* Tight lines and margins so two lines of English fit inside a one-line
+	   Hebrew row without making it taller (a third line still grows it).
+	   Centered vertically so one line sits level with the Hebrew. */
+	align-self: center;
 	font-family: var(--hda-font-en);
-	font-size: 1em;
+	font-size: 0.95em;
+	line-height: 1.22;
+	padding-top: 0.15em;
+	padding-bottom: 0.15em;
 }
 .hda-view .hda-notes {
 	/* Tight lines and margins so two lines of notes fit inside a one-line
@@ -1317,11 +1324,14 @@
 }
 .hda-view textarea.hda-pattern {
 	/* Two short lines fit inside a one-line Hebrew row, so wrapping a long
-	   pattern never makes the row taller; a third line would be clipped. */
+	   pattern never makes the row taller; a third line would be clipped.
+	   The box fits its text (one or two lines) so it centers vertically. */
 	align-self: center;
 	width: 100%;
-	height: calc(2 * 1.15em + 0.3em);
-	min-height: 0;
+	field-sizing: content;
+	height: auto;
+	min-height: calc(1.15em + 0.3em);
+	max-height: calc(2 * 1.15em + 0.3em);
 	margin: 0;
 	padding: 0.15em 0.2em;
 	border: none;
