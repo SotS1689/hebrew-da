@@ -1,4 +1,4 @@
-import { AbstractInputSuggest, App, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, TFolder, normalizePath } from "obsidian";
+import { AbstractInputSuggest, App, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, TFolder, normalizePath, setIcon } from "obsidian";
 import {
 	COLOR_THEMES, DEFAULT_HEBREW_FONT, HDA_ICON, HDAView, HdaSettings, UI_SCALE_STEPS, VIEW_TYPE_HDA, defaultSettings,
 } from "./HDAView";
@@ -95,6 +95,8 @@ export default class HebrewDAPlugin extends Plugin {
 		this.addSettingTab(new HdaSettingTab(this.app, this));
 
 		this.addRibbonIcon(HDA_ICON, "Create new Hebrew Discourse Analysis", () => this.openCreateModal());
+		this.app.workspace.onLayoutReady(() => this.watchFileExplorers());
+		this.registerEvent(this.app.workspace.on("layout-change", () => this.watchFileExplorers()));
 
 		this.addCommand({ id: "create-new", name: "Create new analysis", callback: () => this.openCreateModal() });
 		this.addCommand({ id: "import-excel", name: "Import Excel DA workbooks (.xlsm)", callback: () => this.openImport() });
@@ -117,6 +119,41 @@ export default class HebrewDAPlugin extends Plugin {
 				if (!checking) view.openReference(null, null);
 				return true;
 			},
+		});
+	}
+
+	onunload(): void {
+		document.querySelectorAll(".hda-file-icon").forEach(el => el.remove());
+	}
+
+	// File Explorer: give .hda files the same vav icon as the ribbon/command.
+	// The explorer re-renders rows as folders open and the list scrolls, so
+	// each explorer is watched and new rows are decorated as they appear.
+	private watchedExplorers = new WeakSet<HTMLElement>();
+
+	private watchFileExplorers(): void {
+		this.app.workspace.getLeavesOfType("file-explorer").forEach(leaf => {
+			const el = leaf.view.containerEl;
+			this.decorateHdaFiles(el);
+			if (this.watchedExplorers.has(el)) return;
+			this.watchedExplorers.add(el);
+			const observer = new MutationObserver(() => this.decorateHdaFiles(el));
+			observer.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-path"] });
+			this.register(() => observer.disconnect());
+		});
+	}
+
+	private decorateHdaFiles(root: HTMLElement): void {
+		root.querySelectorAll<HTMLElement>(".nav-file-title").forEach(title => {
+			const isHda = (title.dataset.path ?? "").toLowerCase().endsWith(`.${EXTENSION}`);
+			const icon = title.querySelector(":scope > .hda-file-icon");
+			if (isHda && !icon) {
+				const span = createSpan({ cls: "hda-file-icon" });
+				setIcon(span, HDA_ICON);
+				title.prepend(span);
+			} else if (!isHda && icon) {
+				icon.remove();
+			}
 		});
 	}
 
