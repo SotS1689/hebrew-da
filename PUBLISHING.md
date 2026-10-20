@@ -30,6 +30,8 @@ Where things stand, so the work can be picked up from any device. Tick items as 
 
 Status (2026-10-20): submitted. The automated scan of 0.1.0 failed on two errors: a direct `style.transform` write in `StoryBoard.ts` (now `setCssStyles`) and JSZip's bundled script-element polyfill (JSZip replaced with `fflate`). Both fixed in 0.1.2. Check the scan result at https://community.obsidian.md/account/plugins/hebrew-da (use "Check for new releases" if it hasn't picked up 0.1.2). The remaining items there are warnings/recommendations and don't block.
 
+Update: 0.1.3 passed the automated scan with no errors. 0.1.4 fixes the warnings that mattered (the view now uses its own window/document, so it works in pop-out windows; settings saves report failures; the File Explorer icon CSS no longer uses `:has`). The rest are housekeeping (type-assertion/`any` lint, deprecated-but-working APIs, CSS notes for old Obsidian versions, `builtin-modules`, attestations).
+
 ## Every release after that
 
 1. Bump `version` in `manifest.json` and `package.json`; add `"x.y.z": "<minAppVersion>"` to `versions.json`.
