@@ -7,7 +7,6 @@ import { COLOR_THEMES, DEFAULT_HEBREW_FONT, HDAView, HdaSettings, UI_SCALE_STEPS
 import { HdaData, emptyData } from "../src/model";
 import { importWorkbook } from "../src/xlsmImport";
 import { Modal, Notice, download } from "./obsidian-web";
-import example from "../dev/sample.json";
 
 const SETTINGS_KEY = "hda-web-settings";
 const DOC_KEY = "hda-web-doc";
@@ -223,7 +222,9 @@ document.addEventListener("drop", e => {
 	await view.onOpen();
 	addWebButtons();
 	paintPage();
+	// Start empty. (Early visitors were shown an example; drop that too.)
 	const saved = load(DOC_KEY);
-	if (saved) openData(saved, load(NAME_KEY) || "Untitled");
-	else openData(JSON.stringify(example), "Example – Genesis 3.1-6");
+	const name = load(NAME_KEY) || "Untitled";
+	if (saved && !name.startsWith("Example – ")) openData(saved, name);
+	else openData(JSON.stringify(emptyData()), "Untitled");
 })();
