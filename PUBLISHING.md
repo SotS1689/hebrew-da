@@ -11,11 +11,11 @@ Where things stand, so the work can be picked up from any device. Tick items as 
 - [x] `.github/workflows/release.yml`: pushing a version tag builds the plugin and creates the Release with `main.js`, `manifest.json`, `styles.css`
 - [x] Web version builds into `docs/` (`npm run web`)
 
-## 2. GitHub
+## 2. GitHub (done 2026-10-20)
 
-- [ ] Create the public repo `SotS1689/hebrew-da` and push `main`
-- [ ] Turn on GitHub Pages: branch `main`, folder `/docs` → https://sots1689.github.io/hebrew-da/
-- [ ] Push tag `0.1.0`; check the Release has the three files
+- [x] Create the public repo `SotS1689/hebrew-da` and push `main`
+- [x] Turn on GitHub Pages: branch `main`, folder `/docs` → https://sots1689.github.io/hebrew-da/
+- [x] Push tag `0.1.0`; check the Release has the three files
 
 ## 3. Beta test with BRAT
 
