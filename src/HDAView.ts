@@ -9,6 +9,7 @@ import { StoryBoard } from "./StoryBoard";
 import { FUNCTION_SECTIONS, InstructionBlock, METHOD_INSTRUCTIONS, TOOL_HELP } from "./reference";
 
 export const VIEW_TYPE_HDA = "hebrew-da-view";
+export const SUPPORT_URL = "https://buymeacoffee.com/reformedretrieval";
 
 // Ribbon / tab icon: a bold vav, the clause connector the method starts from.
 export const HDA_ICON = "hebrew-da-vav";
@@ -356,6 +357,13 @@ export class HDAView extends TextFileView {
 			await this.plugin.saveSettings();
 			this.plugin.refreshAllViews();
 		});
+		const support = right.createEl("button", { cls: "da-btn da-btn-support", attr: { title: "Support this tool (Buy Me a Coffee)" } });
+		// Coffee mug icon, same as DA-Tool's and BibleSearch's Support button.
+		support.createSvg("svg", { cls: "da-support-icon", attr: { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true" } }, svg => {
+			svg.createSvg("path", { attr: { d: "M2 21h18a1 1 0 0 1 0 2H2a1 1 0 0 1 0-2zM20.242 11.022a1 1 0 0 0-.242-.688 2.99 2.99 0 0 0-2-.734H16V6a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-2.022h2a3 3 0 0 0 3-3V11.02a1 1 0 0 0-.758-.998zM14 16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v10zm4-4.022V11.6h-2v-2h2a1 1 0 0 1 1 1v1.378a1 1 0 0 1-1 1z" } });
+		});
+		support.createSpan({ text: "Support" });
+		support.addEventListener("click", () => window.open(SUPPORT_URL, "_blank"));
 
 		// Tab strip + toolbar
 		const strip = root.createDiv({ cls: "da-tab-strip da-ui-scaled" });

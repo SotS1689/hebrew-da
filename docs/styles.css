@@ -1507,16 +1507,33 @@
 
 /* ---------- File Explorer icon for .hda files ---------- */
 
-.nav-file-title[data-path$=".hda"]::before {
-	content: "";
-	display: inline-block;
+.nav-file-title > .hda-file-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	flex: 0 0 auto;
-	width: 14px;
-	height: 14px;
 	margin-inline-end: 4px;
-	background-color: currentColor;
-	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='52' text-anchor='middle' dominant-baseline='central' font-size='90' font-weight='bold' font-family='SBL Hebrew, Times New Roman, serif'%3E%D7%95%3C/text%3E%3C/svg%3E") center / contain no-repeat;
-	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='52' text-anchor='middle' dominant-baseline='central' font-size='90' font-weight='bold' font-family='SBL Hebrew, Times New Roman, serif'%3E%D7%95%3C/text%3E%3C/svg%3E") center / contain no-repeat;
+	color: var(--icon-color, currentColor);
+}
+.nav-file-title > .hda-file-icon .svg-icon {
+	width: 20px;
+	height: 20px;
+}
+/* Themes that draw their own file icon in the gutter (e.g. AnuPpuccin's
+   "file icons"): hide it on .hda rows and put the vav in its place. */
+.nav-file-title:has(> .hda-file-icon)::before {
+	display: none !important;
+}
+.anp-file-icons .nav-file-title > .hda-file-icon {
+	position: absolute;
+	width: 28px;
+	/* centered where the theme's 16px icon sat (20px left of the name) */
+	margin-inline-start: calc(-1 * var(--size-4-5) - 6px);
+	margin-inline-end: 0;
+}
+.anp-file-icons .nav-file-title > .hda-file-icon .svg-icon {
+	width: 28px;
+	height: 28px;
 }
 
 /* ---------- light/dark switch (header) ---------- */
@@ -1885,3 +1902,24 @@
 .hda-prompt-input { width: 100%; margin-bottom: 16px; }
 .hda-prompt-buttons { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .hda-prompt-buttons-gap { margin-top: 12px; }
+
+/* Support button (as in DA-Tool and BibleSearch) */
+.hda-view .da-btn-support {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--da-success);
+	border-color: var(--da-border-strong);
+	color: var(--da-on-accent);
+	font-weight: 700;
+}
+.hda-view .da-support-icon {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+.hda-view .da-btn-support:hover {
+	background: var(--da-success-hover);
+	border-color: var(--da-faint);
+	color: var(--da-on-accent);
+}
