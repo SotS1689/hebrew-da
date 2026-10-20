@@ -565,7 +565,7 @@ export class StoryBoard {
 			p.style.fill = cs.fill;
 		});
 		this.plane.addClass("hds-exporting");
-		this.plane.style.transform = "none";
+		this.plane.setCssStyles({ transform: "none" });
 		const prevW = this.plane.style.width, prevH = this.plane.style.height;
 		let w = 0, h = 0;
 		this.plane.querySelectorAll<HTMLElement>(".hds-block, .hds-link-label").forEach(el => {

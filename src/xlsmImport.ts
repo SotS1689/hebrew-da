@@ -11,7 +11,7 @@
 // Excel last displayed. Plain-regex XML reading keeps this usable outside a
 // browser (the import is tested from Node).
 
-import JSZip from "jszip";
+import { strFromU8, unzipSync } from "fflate";
 import { Clause, HdaData, Line, collapse, emptyData, indentOf, inferVerses, levelFromSpreadsheet, linesFor, newClause, startVerseOf } from "./model";
 
 type Sheet = Map<string, string>; // "A3" -> text
@@ -58,8 +58,8 @@ function parseSheet(xml: string, shared: string[]): Sheet {
 	return cells;
 }
 
-async function readSheets(zip: JSZip): Promise<Map<string, Sheet>> {
-	const read = async (path: string) => (await zip.file(path)?.async("string")) ?? null;
+async function readSheets(zip: Record<string, Uint8Array>): Promise<Map<string, Sheet>> {
+	const read = async (path: string) => (zip[path] ? strFromU8(zip[path]) : null);
 	const workbook = await read("xl/workbook.xml");
 	const rels = await read("xl/_rels/workbook.xml.rels");
 	if (!workbook || !rels) throw new Error("This doesn't look like an Excel workbook.");
@@ -100,7 +100,7 @@ function oldLevel(radio: number, leadingSpaces: number): { depth: number; line: 
 }
 
 export async function importWorkbook(buffer: ArrayBuffer | Uint8Array, fileName = ""): Promise<HdaData> {
-	const zip = await JSZip.loadAsync(buffer);
+	const zip = unzipSync(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer));
 	const sheets = await readSheets(zip);
 	const mainline = sheets.get("Distinguish Mainline");
 	if (!mainline) throw new Error("No 'Distinguish Mainline' sheet found; is this a DA Template workbook?");

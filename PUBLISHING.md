@@ -6,7 +6,7 @@ Where things stand, so the work can be picked up from any device. Tick items as 
 
 - [x] `manifest.json` at the repo root: id `hebrew-da`, no "Obsidian" in id/name, one-sentence description ending in a period, `minAppVersion` 1.4.10 (needed for the folder suggester)
 - [x] `versions.json`, `LICENSE` (MIT), `README.md` with screenshot
-- [x] Guidelines review: command names don't repeat the plugin name; no static inline styles (moved to CSS classes); user-entered paths go through `normalizePath`; every CSS rule is scoped to `.hda-` / `.hds-` classes (plus one file-explorer rule that only matches `.hda` files); `innerHTML` not used; no network requests; PNG export writes through the vault API; no default hotkeys
+- [x] Guidelines review: command names don't repeat the plugin name; no static inline styles (moved to CSS classes); user-entered paths go through `normalizePath`; every CSS rule is scoped to `.hda-` / `.hds-` classes (plus one file-explorer rule for the `.hda-file-icon` the plugin adds to `.hda` rows); `innerHTML` not used; no network requests; PNG export writes through the vault API; no default hotkeys
 - [x] `npm run build` and `npx tsc --noEmit` pass
 - [x] `.github/workflows/release.yml`: pushing a version tag builds the plugin and creates the Release with `main.js`, `manifest.json`, `styles.css`
 - [x] Web version builds into `docs/` (`npm run web`)
@@ -27,6 +27,8 @@ Where things stand, so the work can be picked up from any device. Tick items as 
 2. Link the GitHub account `SotS1689`.
 3. Submit the plugin, pointing it at `SotS1689/hebrew-da`. The site checks `manifest.json` and the latest Release automatically.
 4. A reviewer reads the code later and may ask for changes. This can take weeks.
+
+Status (2026-10-20): submitted. The automated scan of 0.1.0 failed on two errors: a direct `style.transform` write in `StoryBoard.ts` (now `setCssStyles`) and JSZip's bundled script-element polyfill (JSZip replaced with `fflate`). Both fixed in 0.1.2. Check the scan result at https://community.obsidian.md/account/plugins/hebrew-da (use "Check for new releases" if it hasn't picked up 0.1.2). The remaining items there are warnings/recommendations and don't block.
 
 ## Every release after that
 
