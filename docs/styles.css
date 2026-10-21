@@ -978,13 +978,11 @@
    ===================================================================== */
 
 .hda-view {
-	/* Speech-depth colors: Hx, Dx, Dx², Dx³ */
+	/* Text-type colors: Hx, Dx (offline badges use a lighter shade) */
 	/* Hx: a gray mixed from the text color, so it contrasts in every theme
 	   (the secondary/button color is near the background in some). */
 	--hda-d0: color-mix(in srgb, var(--da-text) 78%, var(--da-surface));
 	--hda-d1: var(--da-accent);
-	--hda-d2: var(--da-success);
-	--hda-d3: var(--da-main-point);
 	--hda-guide: color-mix(in srgb, var(--da-border-strong) 75%, transparent);
 	--hda-font-en: "DA Serif", "Gentium Plus", "Gentium Alt", Georgia, "Times New Roman", serif;
 	--hda-font-he: "SBL Hebrew", "SBL BibLit", "Ezra SIL", "Times New Roman", serif;
@@ -1133,11 +1131,6 @@
 	text-overflow: ellipsis;
 	align-self: end;
 	min-width: 0;
-}
-.hda-view .hda-head .hda-head-he {
-	text-align: right;
-}
-.hda-view .hda-head .hda-head-center {
 	text-align: center;
 }
 
@@ -1189,8 +1182,6 @@
 	color: var(--da-accent);
 }
 .hda-view .hda-clause.hda-d1 .hda-ref { border-left-color: var(--hda-d1); }
-.hda-view .hda-clause.hda-d2 .hda-ref { border-left-color: var(--hda-d2); }
-.hda-view .hda-clause.hda-d3 .hda-ref { border-left-color: var(--hda-d3); }
 .hda-view .hda-verse-input {
 	width: 100%;
 	height: auto;
@@ -1276,7 +1267,7 @@
 	background-position: left var(--hda-pad) top 0;
 }
 
-/* Level badge: solid for mainline, outlined for offline */
+/* Level badge: Hx gray, Dx accent; offline is a lighter shade of the same */
 .hda-view .hda-level {
 	align-self: center;
 	justify-self: center;
@@ -1293,15 +1284,15 @@
 }
 .hda-view .hda-level.hda-d0:not(.hda-level-offline) { color: var(--da-surface); }
 .hda-view .hda-level.hda-d1 { background: var(--hda-d1); border-color: var(--hda-d1); }
-.hda-view .hda-level.hda-d2 { background: var(--hda-d2); border-color: var(--hda-d2); }
-.hda-view .hda-level.hda-d3 { background: var(--hda-d3); border-color: var(--hda-d3); }
 .hda-view .hda-level.hda-level-offline {
-	background: transparent;
-	color: var(--hda-d0);
+	--hda-shade: color-mix(in srgb, var(--hda-d0) 38%, var(--da-surface));
+	background: var(--hda-shade);
+	border-color: var(--hda-shade);
+	color: var(--da-text);
 }
-.hda-view .hda-level.hda-level-offline.hda-d1 { color: var(--hda-d1); }
-.hda-view .hda-level.hda-level-offline.hda-d2 { color: var(--hda-d2); }
-.hda-view .hda-level.hda-level-offline.hda-d3 { color: var(--hda-d3); }
+.hda-view .hda-level.hda-level-offline.hda-d1 {
+	--hda-shade: color-mix(in srgb, var(--hda-d1) 38%, var(--da-surface));
+}
 .hda-view button.hda-level:hover {
 	filter: brightness(1.1);
 	box-shadow: 0 0 0 2px var(--da-accent-soft-bg);

@@ -13,7 +13,7 @@ It runs two ways:
 
 Ref | Hebrew (indented from the right) | Level | Conj | Predicate Pattern | Discourse Analysis | English (indented from the left)
 
-- **Levels:** Hx M/O1–O3, then Dx M/M2/O1–O3, then Dx² and Dx³ for speech inside speech. Click a clause's badge to set its level.
+- **Levels:** Hx M, Hx O, Dx M, Dx O (mainline / offline narrative and speech). Click a clause's badge to set its level.
 - **Indent** is set separately with Tab / Shift+Tab.
 - **Getting text in:** paste Hebrew in the sidebar and click Insert. Verse numbers come from the text, or from the passage reference plus the sof pasuq.
 - **Editing:** Enter splits a clause; Backspace at the start joins it to the one above. Ctrl+Z / Ctrl+Y undo and redo.

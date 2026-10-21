@@ -1,8 +1,8 @@
 import { addIcon, App, Menu, Modal, Notice, TextFileView, TFile, WorkspaceLeaf } from "obsidian";
 import html2canvas from "html2canvas";
 import {
-	Clause, DEPTH_NAMES, HdaColumns, HdaData, HdaTab, STORY_FUNCTIONS, LINE_NAMES, Line, MAX_DEPTH, MAX_INDENT, PREDICATE_PATTERNS,
-	computeLabels, depthLabel, emptyData, normalizeStory, inferVerses, levelLabel, linesFor, newClause, normalizeData,
+	Clause, DEPTH_NAMES, HdaColumns, HdaData, HdaTab, STORY_FUNCTIONS, LINES, LINE_NAMES, Line, MAX_DEPTH, MAX_INDENT, PREDICATE_PATTERNS,
+	computeLabels, depthLabel, emptyData, normalizeStory, inferVerses, levelLabel, newClause, normalizeData,
 	referenceSectionFor, splitPasted, startVerseOf, textType, toHebrewConj,
 } from "./model";
 import { StoryBoard } from "./StoryBoard";
@@ -443,12 +443,15 @@ export class HDAView extends TextFileView {
 		const legend = side.createDiv({ cls: "hda-legend hda-side-prose" });
 		legend.createEl("h2", { cls: "da-section-title", text: "Levels" });
 		for (let d = 0; d <= MAX_DEPTH; d++) {
-			const item = legend.createDiv({ cls: "hda-legend-item" });
-			item.createSpan({ cls: `hda-level hda-d${d}`, text: depthLabel(d) });
-			item.createSpan({ text: DEPTH_NAMES[d] });
+			for (const line of LINES) {
+				const item = legend.createDiv({ cls: "hda-legend-item" });
+				const badge = item.createSpan({ cls: `hda-level hda-d${d}`, text: levelLabel({ depth: d, line }) });
+				if (line === "O") badge.addClass("hda-level-offline");
+				item.createSpan({ text: `${DEPTH_NAMES[d]}, ${LINE_NAMES[line].toLowerCase()}` });
+			}
 		}
 		const lines = legend.createDiv({ cls: "hda-legend-lines" });
-		lines.setText("M = mainline · M2 = second mainline (Dx) · O1–O3 = offline. Click a clause's badge to set its level; Tab / Shift+Tab indents it.");
+		lines.setText("Click a clause's badge to set its level; Tab / Shift+Tab indents it.");
 
 		const storySide = side.createDiv({ cls: "hda-legend hda-side-story" });
 		storySide.createEl("h2", { cls: "da-section-title", text: "Functions" });
@@ -564,11 +567,11 @@ export class HDAView extends TextFileView {
 
 		const head = grid.createDiv({ cls: "hda-row hda-head" });
 		head.createDiv({ text: "Ref" });
-		head.createDiv({ cls: "hda-head-he", text: "Hebrew Text" });
-		head.createDiv({ cls: "hda-head-center", text: "Level" });
-		if (cols.conj) head.createDiv({ cls: "hda-head-center", text: "Conj" });
-		if (cols.pattern) head.createDiv({ cls: "hda-head-center", text: "Pattern", attr: { title: "Predicate Pattern" } });
-		if (cols.notes) head.createDiv({ cls: "hda-head-center", text: "Analysis", attr: { title: "Discourse Analysis" } });
+		head.createDiv({ text: "Hebrew Text" });
+		head.createDiv({ text: "Level" });
+		if (cols.conj) head.createDiv({ text: "Conj" });
+		if (cols.pattern) head.createDiv({ text: "Pattern", attr: { title: "Predicate Pattern" } });
+		if (cols.notes) head.createDiv({ text: "Analysis", attr: { title: "Discourse Analysis" } });
 		if (cols.english) head.createDiv({ text: "English Translation" });
 		head.createDiv({ text: "" });
 
@@ -602,7 +605,7 @@ export class HDAView extends TextFileView {
 		const row = grid.createDiv({ cls: `hda-row hda-clause hda-d${c.depth}`, attr: { "data-id": c.id } });
 		row.style.setProperty("--hda-indent", String(indent));
 		if (this.selected.has(c.id)) row.addClass("hda-selected");
-		if (c.line === "M" || c.line === "M2") row.addClass("hda-mainline");
+		if (c.line === "M") row.addClass("hda-mainline");
 		if (verseStart) row.addClass("hda-verse-start");
 		if (verseShaded) row.addClass("hda-verse-shaded");
 
@@ -616,7 +619,7 @@ export class HDAView extends TextFileView {
 		he.style.paddingRight = `calc(var(--hda-pad) + ${indent} * var(--hda-step))`;
 
 		const lvl = row.createEl("button", { cls: `hda-level hda-d${c.depth}`, text: levelLabel(c), attr: { title: `${DEPTH_NAMES[c.depth]} · ${LINE_NAMES[c.line]} (click to change)` } });
-		if (c.line.startsWith("O")) lvl.addClass("hda-level-offline");
+		if (c.line === "O") lvl.addClass("hda-level-offline");
 		lvl.addEventListener("click", e => this.openLevelMenu(c.id, e));
 
 		if (cols.conj) this.conjInput(row, c);
@@ -997,10 +1000,10 @@ export class HDAView extends TextFileView {
 		const menu = new Menu();
 		for (let d = 0; d <= MAX_DEPTH; d++) {
 			if (d > 0) menu.addSeparator();
-			for (const line of linesFor(d)) {
+			for (const line of LINES) {
 				const current = c && c.depth === d && c.line === line;
 				menu.addItem(item => {
-					item.setTitle(`${levelLabel({ depth: d, line })}  —  ${d === 0 ? "Narrative" : d === 1 ? "Speech" : "Speech in speech"} ${LINE_NAMES[line].toLowerCase()}`);
+					item.setTitle(`${levelLabel({ depth: d, line })}  —  ${d === 0 ? "Narrative" : "Speech"} ${LINE_NAMES[line].toLowerCase()}`);
 					if (current) item.setIcon("check");
 					item.onClick(() => this.setLevel(ids, d, line));
 				});

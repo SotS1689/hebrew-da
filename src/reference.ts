@@ -144,7 +144,7 @@ export const METHOD_INSTRUCTIONS: InstructionBlock[] = [
 			{ title: "Divide the text into clauses.", sub: ["Put purpose or appositional phrases on their own line when it helps. Press Enter in a Hebrew cell to split a clause there."] },
 			{ title: "Record the conjunction (or Ø for asyndeton) at the start of each clause." },
 			{ title: "Identify the predicate pattern.", sub: ["e.g. wayyiqtol, weyiqtol, weqatal, we(X)-qatal, we(X)-yiqtol, SNC."] },
-			{ title: "Identify the text type: Hx or Dx.", sub: ["Set it with the clause's level badge: Hx levels are narrative, Dx levels are speech, Dx² is speech quoted inside speech."] },
+			{ title: "Identify the text type: Hx or Dx.", sub: ["Set it with the clause's level badge: Hx levels are narrative, Dx levels are speech."] },
 			{ title: "Describe each clause's function relative to its neighbours.", sub: ["Unmarked = mainline; marked = antecedent or offline/background information. The 📖 button opens the matching part of the Function of Communication chart."] },
 			{ title: "Note discourse markers.", sub: ["הנה, ועתה, casus pendens, embedded direct speech (primary/secondary), and the macro-syntactic markers ויהי / והיה introducing a protasis–apodosis."] },
 			{ title: "Define the external and internal boundaries of the unit." },

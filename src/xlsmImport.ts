@@ -12,7 +12,7 @@
 // browser (the import is tested from Node).
 
 import { strFromU8, unzipSync } from "fflate";
-import { Clause, HdaData, Line, collapse, emptyData, indentOf, inferVerses, levelFromSpreadsheet, linesFor, newClause, startVerseOf } from "./model";
+import { Clause, HdaData, Line, collapse, emptyData, inferVerses, legacyIndent, levelFromSpreadsheet, newClause, startVerseOf } from "./model";
 
 type Sheet = Map<string, string>; // "A3" -> text
 
@@ -89,14 +89,15 @@ function maxRow(sheet: Sheet): number {
 	return max;
 }
 
-function oldLevel(radio: number, leadingSpaces: number): { depth: number; line: Line } {
-	const base: Record<number, { depth: number; line: Line }> = {
-		1: { depth: 1, line: "O1" }, 2: { depth: 1, line: "M" }, 3: { depth: 0, line: "O1" }, 4: { depth: 0, line: "M" },
-	};
-	const { depth, line } = base[radio] || base[4];
-	const lines = linesFor(depth);
-	const idx = Math.min(lines.length - 1, lines.indexOf(line) + Math.round(leadingSpaces / 5));
-	return { depth, line: lines[idx] };
+function oldLevel(radio: number, leadingSpaces: number): { depth: number; line: Line; indent: number } {
+	const base: Record<number, [number, number]> = { 1: [1, 2], 2: [1, 0], 3: [0, 1], 4: [0, 0] };
+	const [depth, step] = base[radio] || base[4];
+	// Steps within the text type, in the workbook's finer scheme
+	// (Hx M O1 O2 O3; Dx M M2 O1 O2 O3).
+	const last = depth === 0 ? 3 : 4;
+	const idx = Math.min(last, step + Math.round(leadingSpaces / 5));
+	const offline = depth === 0 ? idx > 0 : idx > 1;
+	return { depth, line: offline ? "O" : "M", indent: legacyIndent(depth, "M") + idx };
 }
 
 export async function importWorkbook(buffer: ArrayBuffer | Uint8Array, fileName = ""): Promise<HdaData> {
@@ -152,9 +153,8 @@ export async function importWorkbook(buffer: ArrayBuffer | Uint8Array, fileName 
 		const wsRow = he ? worksheetRowFor(he) : null;
 		const cell = (col: string) => (wsRow === null ? "" : collapse(worksheet.get(`${col}${wsRow}`) || ""));
 		clauses.push(newClause({
+			// The indent keeps the layout the workbook showed.
 			he, en, ...lvl,
-			// Keep the layout the workbook showed.
-			indent: indentOf({ ...lvl }),
 			conj: cell(conjCol),
 			pattern: cell(patternCol),
 			notes: cell(notesCol),

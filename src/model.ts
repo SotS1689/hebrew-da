@@ -1,18 +1,14 @@
 // Data model for a Hebrew discourse-analysis (.hda) file.
 //
 // Each clause has a level (its label) and an indent (its layout), set
-// independently. The level is a speech depth plus a line:
-//
-//   depth 0 (Hx, narrative):     M  O1 O2 O3
-//   depth 1 (Dx, speech):        M  M2 O1 O2 O3
-//   depth 2 (Dx², speech in speech), depth 3 (Dx³): same as depth 1
-//
-// That covers the spreadsheet's nine columns (Hx M1/O1/O2/O3, Dx
-// M1/M2/O1/O2/O3) as depths 0-1, and lets quotations nest further. The
-// indent is a number of steps from the margin (right in the Hebrew column,
-// left in the English), changed with Tab / Shift+Tab.
+// independently. The level is a text type (depth 0 = Hx, narrative;
+// depth 1 = Dx, speech) plus a line (M = mainline, O = offline): Hx M,
+// Hx O, Dx M, Dx O. The spreadsheet's finer columns (M2, O1-O3) and older
+// files' deeper speech (Dx², Dx³) fold into these; their layout survives as
+// the indent, a number of steps from the margin (right in the Hebrew
+// column, left in the English), changed with Tab / Shift+Tab.
 
-export type Line = "M" | "M2" | "O1" | "O2" | "O3";
+export type Line = "M" | "O";
 
 export interface Clause {
 	id: string;
@@ -143,7 +139,7 @@ export function normalizeStory(raw: unknown): StoryData {
 	return { blocks, links, zoom: num(d.zoom, 1) > 0 ? num(d.zoom, 1) : 1, panX: num(d.panX, 0), panY: num(d.panY, 0) };
 }
 
-export const MAX_DEPTH = 3;
+export const MAX_DEPTH = 1;
 export const MAX_INDENT = 20;
 
 export function emptyData(): HdaData {
@@ -175,44 +171,43 @@ export function normalizeData(raw: unknown): HdaData {
 				id: typeof c?.id === "string" ? c.id : undefined,
 				he: str(c?.he), en: str(c?.en), conj: str(c?.conj), pattern: str(c?.pattern), notes: str(c?.notes),
 				depth: Math.min(MAX_DEPTH, Math.max(0, Math.floor(Number(c?.depth) || 0))),
-				line: isLine(c?.line) ? c.line : "M",
+				line: typeof c?.line === "string" && c.line.startsWith("O") ? "O" : "M",
 			});
 			if (!cl.id) cl.id = newId();
 			if (typeof c?.verse === "string" && c.verse.trim()) cl.verse = c.verse.trim();
-			if (cl.depth === 0 && cl.line === "M2") cl.line = "M";
 			// Files saved before indents were separate from levels took their
-			// indent from the level.
+			// indent from the (older, finer) level.
 			const indent = Number(c?.indent);
-			cl.indent = Number.isFinite(indent) ? Math.min(MAX_INDENT, Math.max(0, Math.round(indent))) : indentOf(cl);
+			cl.indent = Number.isFinite(indent)
+				? Math.min(MAX_INDENT, Math.max(0, Math.round(indent)))
+				: legacyIndent(Math.max(0, Math.floor(Number(c?.depth) || 0)), str(c?.line));
 			return cl;
 		}),
 	};
 }
 
 function str(v: unknown): string { return typeof v === "string" ? v : ""; }
-function isLine(v: unknown): v is Line { return v === "M" || v === "M2" || v === "O1" || v === "O2" || v === "O3"; }
 
 // ---------- levels ----------
 
-export function linesFor(depth: number): Line[] {
-	return depth === 0 ? ["M", "O1", "O2", "O3"] : ["M", "M2", "O1", "O2", "O3"];
-}
+export const LINES: Line[] = ["M", "O"];
 
-// The indent the spreadsheet gave a level (0 = Hx mainline); used for
-// imports and older files.
-export function indentOf(c: { depth: number; line: Line }): number {
+// The indent the spreadsheet gave a level in its finer scheme (Hx M O1 O2
+// O3, then Dx M M2 O1 O2 O3, then deeper speech likewise; 0 = Hx
+// mainline); used for imports and older files.
+const LEGACY_LINES = [["M", "O1", "O2", "O3"], ["M", "M2", "O1", "O2", "O3"]];
+export function legacyIndent(depth: number, line: string): number {
 	let base = 0;
-	for (let d = 0; d < c.depth; d++) base += linesFor(d).length;
-	return base + Math.max(0, linesFor(c.depth).indexOf(c.line));
+	for (let d = 0; d < depth; d++) base += LEGACY_LINES[Math.min(d, 1)].length;
+	return base + Math.max(0, LEGACY_LINES[Math.min(depth, 1)].indexOf(line));
 }
 
 export function textType(depth: number): "Hx" | "Dx" {
 	return depth === 0 ? "Hx" : "Dx";
 }
 
-const SUPERSCRIPT = ["", "", "²", "³"];
 export function depthLabel(depth: number): string {
-	return depth === 0 ? "Hx" : "Dx" + (SUPERSCRIPT[depth] || "");
+	return textType(depth);
 }
 
 export function levelLabel(c: { depth: number; line: Line }): string {
@@ -221,21 +216,20 @@ export function levelLabel(c: { depth: number; line: Line }): string {
 
 export const LINE_NAMES: Record<Line, string> = {
 	M: "Mainline",
-	M2: "Mainline 2",
-	O1: "Offline 1",
-	O2: "Offline 2",
-	O3: "Offline 3",
+	O: "Offline",
 };
 
-export const DEPTH_NAMES = ["Narrative (Hx)", "Direct speech (Dx)", "Speech within speech (Dx²)", "Third-level speech (Dx³)"];
+export const DEPTH_NAMES = ["Narrative (Hx)", "Direct speech (Dx)"];
 
-// The spreadsheet's radio-button value (1-9, 'Don't Touch' column L).
-export function levelFromSpreadsheet(n: number): { depth: number; line: Line } {
-	const map: Record<number, { depth: number; line: Line }> = {
-		1: { depth: 0, line: "M" }, 2: { depth: 0, line: "O1" }, 3: { depth: 0, line: "O2" }, 4: { depth: 0, line: "O3" },
-		5: { depth: 1, line: "M" }, 6: { depth: 1, line: "M2" }, 7: { depth: 1, line: "O1" }, 8: { depth: 1, line: "O2" }, 9: { depth: 1, line: "O3" },
+// The spreadsheet's radio-button value (1-9, 'Don't Touch' column L), as a
+// level plus the indent the workbook showed.
+export function levelFromSpreadsheet(n: number): { depth: number; line: Line; indent: number } {
+	const map: Record<number, [number, string]> = {
+		1: [0, "M"], 2: [0, "O1"], 3: [0, "O2"], 4: [0, "O3"],
+		5: [1, "M"], 6: [1, "M2"], 7: [1, "O1"], 8: [1, "O2"], 9: [1, "O3"],
 	};
-	return map[n] || map[1];
+	const [depth, line] = map[n] || map[1];
+	return { depth, line: line.startsWith("O") ? "O" : "M", indent: legacyIndent(depth, line) };
 }
 
 // ---------- verse labels ----------
