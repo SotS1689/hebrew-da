@@ -100,6 +100,8 @@ export interface HdaPluginHost {
 	refreshAllViews(): void;
 	// The web version downloads the file instead of saving into a vault.
 	saveButton?(view: HDAView): void;
+	// What the Settings dialog's Hebrew-font reset goes back to.
+	defaultHebrewFont?: string;
 }
 
 // ---------- small helpers ----------
@@ -412,23 +414,8 @@ export class HDAView extends TextFileView {
 		});
 		this.button(right, "📖", "da-btn", "Function of Communication (opens at the section for the clause you're working in)", () => this.openReferenceForCurrent());
 		this.button(right, "📷", "da-btn", "Export PNG of the current tab", () => { void this.exportPng(); });
-		const themeSel = right.createEl("select", { cls: "da-theme-select", attr: { title: "Color theme", "aria-label": "Color theme" } });
-		for (const t of COLOR_THEMES) themeSel.createEl("option", { text: t.label, attr: { value: t.id } });
-		themeSel.value = this.plugin.settings.colorTheme;
-		themeSel.addEventListener("change", () => {
-			this.plugin.settings.colorTheme = themeSel.value;
-			this.saveSettingsAndRefresh();
-		});
-		// Light/dark switch, as in DA-Tool's web version (on = light).
-		const modeWrap = right.createDiv({ cls: "hda-mode-switch", attr: { title: "Light / dark mode" } });
-		modeWrap.createSpan({ cls: "hda-mode-icon", text: "🌙" });
-		const modeBtn = modeWrap.createEl("button", { cls: "da-switch", attr: { role: "switch", "aria-label": "Light mode" } });
-		modeBtn.createSpan({ cls: "da-switch-thumb" });
-		modeWrap.createSpan({ cls: "hda-mode-icon", text: "☀️" });
-		modeBtn.addEventListener("click", () => {
-			this.plugin.settings.mode = this.isDark() ? "light" : "dark";
-			this.saveSettingsAndRefresh();
-		});
+		// Color theme and light/dark are in here, as in DA-Tool.
+		this.button(right, "⚙️", "da-btn", "Settings (color theme, light/dark, UI size, Hebrew font)", () => this.openSettings());
 		const supportWrap = right.createDiv({ cls: "da-support-wrap" });
 		const support = supportWrap.createEl("button", { cls: "da-btn da-btn-support", attr: { title: "Support this tool (Buy Me a Coffee)" } });
 		// Coffee mug icon, same as DA-Tool's and BibleSearch's Support button.
@@ -1362,6 +1349,66 @@ export class HDAView extends TextFileView {
 		closeBtn.addEventListener("click", close);
 		backdrop.addEventListener("mousedown", e => { if (e.target === backdrop) close(); });
 		build(body, close);
+	}
+
+	// The header's ⚙️ dialog. The light/dark switch and theme picker have the
+	// classes refreshTheming() looks for, so they stay in step with the view.
+	openSettings(): void {
+		const s = this.plugin.settings;
+		const fontDefault = this.plugin.defaultHebrewFont ?? DEFAULT_HEBREW_FONT;
+		this.openModal("Settings", "da-modal-narrow", (body, close) => {
+			const row = (label: string, desc: string) => {
+				const r = body.createDiv({ cls: "hda-setting" });
+				const t = r.createDiv({ cls: "hda-setting-text" });
+				t.createDiv({ cls: "hda-setting-name", text: label });
+				t.createDiv({ cls: "hda-setting-desc", text: desc });
+				return r.createDiv({ cls: "hda-setting-control" });
+			};
+
+			const theme = row("Color theme", "Colors for the whole tool.").createEl("select", { cls: "da-theme-select" });
+			for (const t of COLOR_THEMES) theme.createEl("option", { text: t.label, attr: { value: t.id } });
+			theme.value = s.colorTheme;
+			theme.addEventListener("change", () => { s.colorTheme = theme.value; this.saveSettingsAndRefresh(); });
+
+			// Light/dark switch, as in DA-Tool (on = light).
+			const modeWrap = row("Light / dark mode", "Starts out following your system or Obsidian.").createDiv({ cls: "hda-mode-switch" });
+			modeWrap.createSpan({ cls: "hda-mode-icon", text: "🌙" });
+			const modeBtn = modeWrap.createEl("button", { cls: "da-switch", attr: { role: "switch", "aria-label": "Light mode" } });
+			modeBtn.createSpan({ cls: "da-switch-thumb" });
+			modeBtn.toggleClass("da-switch-on", !this.isDark());
+			modeBtn.setAttr("aria-checked", String(!this.isDark()));
+			modeWrap.createSpan({ cls: "hda-mode-icon", text: "☀️" });
+			modeBtn.addEventListener("click", () => {
+				s.mode = this.isDark() ? "light" : "dark";
+				this.saveSettingsAndRefresh();
+			});
+
+			const ui = row("UI size", "Header, toolbar, sidebar and dialogs. The worksheet has its own zoom.").createEl("select");
+			for (const step of UI_SCALE_STEPS) ui.createEl("option", { text: `${Math.round(step * 100)}%`, attr: { value: String(step) } });
+			ui.value = String(s.uiScale);
+			ui.addEventListener("change", () => { s.uiScale = Number(ui.value); this.saveSettingsAndRefresh(); });
+
+			const fontCtl = row("Hebrew font", "A CSS font list; the first one your computer has is used.");
+			const font = fontCtl.createEl("input", { type: "text", value: s.hebrewFont });
+			font.addEventListener("change", () => { s.hebrewFont = font.value.trim() || fontDefault; this.saveSettingsAndRefresh(); });
+			fontCtl.createEl("button", { cls: "da-btn da-btn-icon-only", text: "↺", attr: { title: "Reset" } }).addEventListener("click", () => {
+				s.hebrewFont = fontDefault; font.value = fontDefault; this.saveSettingsAndRefresh();
+			});
+
+			const slider = (label: string, desc: string, min: number, max: number, step: number, get: () => number, set: (v: number) => void) => {
+				const ctl = row(label, desc);
+				const input = ctl.createEl("input", { type: "range", attr: { min: String(min), max: String(max), step: String(step) } });
+				const out = ctl.createSpan({ cls: "hda-setting-value" });
+				input.value = String(get());
+				out.setText(input.value);
+				input.addEventListener("input", () => { set(Number(input.value)); out.setText(input.value); this.saveSettingsAndRefresh(); });
+			};
+			slider("Hebrew size", "Size of the Hebrew relative to the English.", 1, 2, 0.05, () => s.hebrewScale, v => { s.hebrewScale = v; });
+			slider("Indent width", "Width of one mainline/offline level, in em.", 0.8, 3, 0.1, () => s.indentStep, v => { s.indentStep = v; });
+
+			const foot = body.createDiv({ cls: "hda-prompt-buttons hda-prompt-buttons-gap" });
+			foot.createEl("button", { cls: "da-btn da-btn-primary", text: "Done" }).addEventListener("click", close);
+		});
 	}
 
 	// Opens the chart at the section for the clause being worked on: the one

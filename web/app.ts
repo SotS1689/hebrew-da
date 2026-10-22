@@ -53,6 +53,7 @@ const hostApp = {
 	saveSettings: async () => store(SETTINGS_KEY, JSON.stringify(settings)),
 	refreshAllViews: () => { view.refreshTheming(); paintPage(); },
 	saveButton: () => downloadCurrent(),
+	defaultHebrewFont: WEB_HEBREW_FONT,
 };
 
 const view = new HDAView(new WorkspaceLeaf(), hostApp as any);
@@ -145,91 +146,25 @@ function replacing(action: () => void): void {
 	new ConfirmReplace("This replaces the analysis open here. It isn't kept anywhere else unless you've downloaded it.", action).open();
 }
 
-class SettingsModal extends Modal {
-	constructor() { super(null as any); }
-	onOpen(): void {
-		const c = this.contentEl;
-		c.addClass("web-settings");
-		c.createEl("h2", { cls: "da-modal-title", text: "Settings" });
-		const save = () => { void hostApp.saveSettings(); hostApp.refreshAllViews(); };
-		const row = (label: string, desc: string) => {
-			const r = c.createDiv({ cls: "web-setting" });
-			const t = r.createDiv({ cls: "web-setting-text" });
-			t.createDiv({ cls: "web-setting-name", text: label });
-			t.createDiv({ cls: "web-setting-desc", text: desc });
-			return r.createDiv({ cls: "web-setting-control" });
-		};
-
-		// Color theme and light/dark live here rather than in the header, as in DA-Tool.
-		const theme = row("Color theme", "Colors for the whole tool.").createEl("select");
-		for (const t of COLOR_THEMES) theme.createEl("option", { text: t.label, attr: { value: t.id } });
-		theme.value = settings.colorTheme;
-		theme.addEventListener("change", () => { settings.colorTheme = theme.value; save(); });
-
-		// Same classes as the view's header switch, so refreshTheming() keeps it in step.
-		const modeWrap = row("Light / dark mode", "Starts out following your system setting.").createDiv({ cls: "hda-mode-switch" });
-		modeWrap.createSpan({ cls: "hda-mode-icon", text: "🌙" });
-		const isDark = () => settings.mode === "dark" || (settings.mode !== "light" && darkQuery.matches);
-		const modeBtn = modeWrap.createEl("button", { cls: "da-switch", attr: { role: "switch", "aria-label": "Light mode" } });
-		modeBtn.createSpan({ cls: "da-switch-thumb" });
-		modeBtn.toggleClass("da-switch-on", !isDark());
-		modeBtn.setAttr("aria-checked", String(!isDark()));
-		modeWrap.createSpan({ cls: "hda-mode-icon", text: "☀️" });
-		modeBtn.addEventListener("click", () => { settings.mode = isDark() ? "light" : "dark"; save(); });
-
-		const ui = row("UI size", "Header, toolbar, sidebar and dialogs. The worksheet has its own zoom.").createEl("select");
-		for (const step of UI_SCALE_STEPS) ui.createEl("option", { text: `${Math.round(step * 100)}%`, attr: { value: String(step) } });
-		ui.value = String(settings.uiScale);
-		ui.addEventListener("change", () => { settings.uiScale = Number(ui.value); save(); });
-
-		const fontCtl = row("Hebrew font", "A CSS font list; the first one your computer has is used.");
-		const font = fontCtl.createEl("input", { type: "text", value: settings.hebrewFont });
-		font.addEventListener("change", () => { settings.hebrewFont = font.value.trim() || WEB_HEBREW_FONT; save(); });
-		fontCtl.createEl("button", { cls: "da-btn da-btn-icon-only", text: "↺", attr: { title: "Reset" } }).addEventListener("click", () => {
-			settings.hebrewFont = WEB_HEBREW_FONT; font.value = WEB_HEBREW_FONT; save();
-		});
-
-		const slider = (label: string, desc: string, min: number, max: number, step: number, get: () => number, set: (v: number) => void) => {
-			const ctl = row(label, desc);
-			const input = ctl.createEl("input", { type: "range", attr: { min: String(min), max: String(max), step: String(step) } });
-			const out = ctl.createSpan({ cls: "web-setting-value" });
-			input.value = String(get());
-			out.setText(input.value);
-			input.addEventListener("input", () => { set(Number(input.value)); out.setText(input.value); save(); });
-		};
-		slider("Hebrew size", "Size of the Hebrew relative to the English.", 1, 2, 0.05, () => settings.hebrewScale, v => { settings.hebrewScale = v; });
-		slider("Indent width", "Width of one mainline/offline level, in em.", 0.8, 3, 0.1, () => settings.indentStep, v => { settings.indentStep = v; });
-
-		const foot = c.createDiv({ cls: "hda-prompt-buttons hda-prompt-buttons-gap" });
-		foot.createEl("button", { cls: "da-btn da-btn-primary", text: "Done" }).addEventListener("click", () => this.close());
-	}
-	onClose(): void { this.contentEl.empty(); }
-}
-
 function addWebButtons(): void {
 	const right = view.contentEl.querySelector<HTMLElement>(".da-header-right");
 	if (!right) return;
 	const saveBtn = right.firstElementChild as HTMLElement | null;
 	saveBtn?.setAttribute("title", "Download as a .hda file");
-	const btn = (text: string, title: string, before: Element | null, onClick: () => void) => {
+	const btn = (text: string, title: string, onClick: () => void) => {
 		const b = document.createElement("button");
 		b.className = "da-btn";
 		b.textContent = text;
 		b.title = title;
 		b.setAttribute("aria-label", title);
 		b.addEventListener("click", onClick);
-		right.insertBefore(b, before);
+		right.insertBefore(b, saveBtn);
 		return b;
 	};
-	// Same icons as DA-Tool's New / Open. New, Open and Save sit together;
-	// Settings (DA-Tool's ⚙️) takes over the header's theme picker and
-	// light/dark switch, and sits after the other icon buttons.
-	btn("📄", "New analysis", saveBtn, () => replacing(() => openData(JSON.stringify(emptyData()), "Untitled")));
-	btn("📂", "Open a .hda file, or import an Excel DA workbook (.xlsm)", saveBtn, () =>
+	// Same icons as DA-Tool's New / Open, next to Save.
+	btn("📄", "New analysis", () => replacing(() => openData(JSON.stringify(emptyData()), "Untitled")));
+	btn("📂", "Open a .hda file, or import an Excel DA workbook (.xlsm)", () =>
 		pickFiles(".hda,.json,.xlsm,.xlsx", false, files => replacing(() => void openFiles(files))));
-	right.querySelector(".da-theme-select")?.remove();
-	right.querySelector(".hda-mode-switch")?.remove();
-	btn("⚙️", "Settings (color theme, light/dark, UI size, Hebrew font)", right.querySelector(".da-support-wrap"), () => new SettingsModal().open());
 }
 
 // Drop a .hda or .xlsm anywhere on the page to open it.

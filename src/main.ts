@@ -248,7 +248,7 @@ class HdaSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Light / dark mode")
-			.setDesc("Auto follows Obsidian's own mode. Also the 🌙/☀️ switch in the header.")
+			.setDesc("Auto follows Obsidian's own mode. Also the 🌙/☀️ switch under ⚙️ Settings in the header.")
 			.addDropdown(d => {
 				d.addOption("auto", "Auto (follow Obsidian)").addOption("light", "Light").addOption("dark", "Dark");
 				d.setValue(s.mode).onChange(async v => { s.mode = v as HdaSettings["mode"]; await save(); });

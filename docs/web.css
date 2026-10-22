@@ -23,7 +23,7 @@ body { background: #f8fafc; overflow: hidden; }
 .hda-view .web-menu-check { width: 1em; color: var(--da-accent); }
 .hda-view .web-menu-sep { height: 1px; background: var(--da-border); margin: 4px 0; }
 
-/* Dialogs: the confirm dialog's plain buttons, and Settings. */
+/* Dialogs: the confirm dialog's plain buttons. */
 .hda-view .web-modal .da-modal-body p { margin: 0 0 12px; line-height: 1.5; }
 .hda-view .web-modal .hda-prompt-buttons { flex-wrap: wrap; }
 .hda-view .web-modal .hda-prompt-buttons > button:not(.da-btn) {
@@ -33,20 +33,3 @@ body { background: #f8fafc; overflow: hidden; }
 .hda-view .web-modal .hda-prompt-buttons > button.mod-warning { background: var(--da-danger); border-color: var(--da-danger); color: #fff; }
 .hda-view .web-modal .hda-prompt-buttons > button.mod-warning:hover { background: var(--da-danger-hover); }
 
-.hda-view .web-settings .da-modal-title { margin: 0 0 8px; }
-.hda-view .web-setting { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px solid var(--da-border); }
-.hda-view .web-setting-text { flex: 1; min-width: 0; }
-.hda-view .web-setting-name { font-weight: 600; }
-.hda-view .web-setting-desc { color: var(--da-muted); font-size: .85em; margin-top: 2px; }
-.hda-view .web-setting-control { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.hda-view .web-setting-control select,
-.hda-view .web-setting-control input[type="text"] {
-	background: var(--da-surface); color: var(--da-text);
-	border: 1px solid var(--da-border-strong); border-radius: 6px; padding: 4px 6px; font: inherit;
-}
-.hda-view .web-setting-control input[type="text"] { width: 12em; }
-.hda-view .web-setting-value { min-width: 2.5em; text-align: right; font-variant-numeric: tabular-nums; }
-
-@media (max-width: 600px) {
-	.hda-view .web-setting { flex-direction: column; align-items: stretch; gap: 6px; }
-}

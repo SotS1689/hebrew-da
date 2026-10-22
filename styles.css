@@ -896,6 +896,25 @@
 	max-width: 40rem;
 }
 
+/* ⚙️ Settings dialog */
+.hda-view .hda-setting { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px solid var(--da-border); }
+.hda-view .hda-setting:first-child { border-top: 0; padding-top: 0; }
+.hda-view .hda-setting-text { flex: 1; min-width: 0; }
+.hda-view .hda-setting-name { font-weight: 600; }
+.hda-view .hda-setting-desc { color: var(--da-muted); font-size: .85em; margin-top: 2px; }
+.hda-view .hda-setting-control { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.hda-view .hda-setting-control select:not(.da-theme-select),
+.hda-view .hda-setting-control input[type="text"] {
+	background: var(--da-surface); color: var(--da-text);
+	border: 1px solid var(--da-border-strong); border-radius: 6px; padding: 4px 6px; font: inherit;
+}
+.hda-view .hda-setting-control input[type="text"] { width: 12em; }
+.hda-view .hda-setting-value { min-width: 2.5em; text-align: right; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 600px) {
+	.hda-view .hda-setting { flex-direction: column; align-items: stretch; gap: 6px; }
+}
+
 /* Text Flow Instructions: the source PDF as text, styled like the other
  * instructions. --da-tfi-level is list depth (hanging-indent steps);
  * --da-tfi-tabs is a Greek example line's indent in the flow. */
