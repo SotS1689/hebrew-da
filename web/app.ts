@@ -160,6 +160,23 @@ class SettingsModal extends Modal {
 			return r.createDiv({ cls: "web-setting-control" });
 		};
 
+		// Color theme and light/dark live here rather than in the header, as in DA-Tool.
+		const theme = row("Color theme", "Colors for the whole tool.").createEl("select");
+		for (const t of COLOR_THEMES) theme.createEl("option", { text: t.label, attr: { value: t.id } });
+		theme.value = settings.colorTheme;
+		theme.addEventListener("change", () => { settings.colorTheme = theme.value; save(); });
+
+		// Same classes as the view's header switch, so refreshTheming() keeps it in step.
+		const modeWrap = row("Light / dark mode", "Starts out following your system setting.").createDiv({ cls: "hda-mode-switch" });
+		modeWrap.createSpan({ cls: "hda-mode-icon", text: "🌙" });
+		const isDark = () => settings.mode === "dark" || (settings.mode !== "light" && darkQuery.matches);
+		const modeBtn = modeWrap.createEl("button", { cls: "da-switch", attr: { role: "switch", "aria-label": "Light mode" } });
+		modeBtn.createSpan({ cls: "da-switch-thumb" });
+		modeBtn.toggleClass("da-switch-on", !isDark());
+		modeBtn.setAttr("aria-checked", String(!isDark()));
+		modeWrap.createSpan({ cls: "hda-mode-icon", text: "☀️" });
+		modeBtn.addEventListener("click", () => { settings.mode = isDark() ? "light" : "dark"; save(); });
+
 		const ui = row("UI size", "Header, toolbar, sidebar and dialogs. The worksheet has its own zoom.").createEl("select");
 		for (const step of UI_SCALE_STEPS) ui.createEl("option", { text: `${Math.round(step * 100)}%`, attr: { value: String(step) } });
 		ui.value = String(settings.uiScale);
@@ -205,11 +222,14 @@ function addWebButtons(): void {
 		return b;
 	};
 	// Same icons as DA-Tool's New / Open. New, Open and Save sit together;
-	// Settings goes after the other icon buttons, before the theme picker.
+	// Settings (DA-Tool's ⚙️) takes over the header's theme picker and
+	// light/dark switch, and sits after the other icon buttons.
 	btn("📄", "New analysis", saveBtn, () => replacing(() => openData(JSON.stringify(emptyData()), "Untitled")));
 	btn("📂", "Open a .hda file, or import an Excel DA workbook (.xlsm)", saveBtn, () =>
 		pickFiles(".hda,.json,.xlsm,.xlsx", false, files => replacing(() => void openFiles(files))));
-	btn("⚙", "Settings", right.querySelector(".da-theme-select"), () => new SettingsModal().open());
+	right.querySelector(".da-theme-select")?.remove();
+	right.querySelector(".hda-mode-switch")?.remove();
+	btn("⚙️", "Settings (color theme, light/dark, UI size, Hebrew font)", right.querySelector(".da-support-wrap"), () => new SettingsModal().open());
 }
 
 // Drop a .hda or .xlsm anywhere on the page to open it.
