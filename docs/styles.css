@@ -2037,3 +2037,21 @@
 	color: var(--da-text);
 	text-decoration: underline;
 }
+
+/* ---------- Omnisearch result icon for .hda files ---------- */
+
+/* Omnisearch draws a generic Lucide "file" icon for unknown extensions inside
+   .omnisearch-result__icon; each result row carries the vault path as
+   data-result-id, so swap that icon for the vav on .hda results. */
+[data-result-id$=".hda"] .omnisearch-result__title .omnisearch-result__icon > svg {
+	display: none;
+}
+[data-result-id$=".hda"] .omnisearch-result__title .omnisearch-result__icon::before {
+	content: "";
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-color: currentColor;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='52' text-anchor='middle' dominant-baseline='central' font-size='90' font-weight='bold' font-family='SBL Hebrew, Times New Roman, serif'%3E%D7%95%3C/text%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='52' text-anchor='middle' dominant-baseline='central' font-size='90' font-weight='bold' font-family='SBL Hebrew, Times New Roman, serif'%3E%D7%95%3C/text%3E%3C/svg%3E") center / contain no-repeat;
+}
