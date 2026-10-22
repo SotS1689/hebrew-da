@@ -1,6 +1,6 @@
 // The web version: the same view as the Obsidian plugin, on a plain page.
 // One analysis at a time, kept in the browser (localStorage) as you type;
-// New / Open / Import / 💾 Download move .hda files in and out.
+// 📄 New / 📂 Open / Import / 💾 Download move .hda files in and out.
 
 import { TFile, WorkspaceLeaf } from "obsidian";
 import { COLOR_THEMES, DEFAULT_HEBREW_FONT, HDAView, HdaSettings, UI_SCALE_STEPS, defaultSettings } from "../src/HDAView";
@@ -194,19 +194,22 @@ function addWebButtons(): void {
 	if (!right) return;
 	const saveBtn = right.firstElementChild as HTMLElement | null;
 	saveBtn?.setAttribute("title", "Download as a .hda file");
-	const btn = (text: string, title: string, onClick: () => void) => {
+	const btn = (text: string, title: string, before: Element | null, onClick: () => void) => {
 		const b = document.createElement("button");
 		b.className = "da-btn";
 		b.textContent = text;
 		b.title = title;
+		b.setAttribute("aria-label", title);
 		b.addEventListener("click", onClick);
-		right.insertBefore(b, saveBtn);
+		right.insertBefore(b, before);
 		return b;
 	};
-	btn("New", "Start a new, empty analysis", () => replacing(() => openData(JSON.stringify(emptyData()), "Untitled")));
-	btn("Open", "Open a .hda file, or import an Excel DA workbook (.xlsm)", () =>
+	// Same icons as DA-Tool's New / Open. New, Open and Save sit together;
+	// Settings goes after the other icon buttons, before the theme picker.
+	btn("📄", "New analysis", saveBtn, () => replacing(() => openData(JSON.stringify(emptyData()), "Untitled")));
+	btn("📂", "Open a .hda file, or import an Excel DA workbook (.xlsm)", saveBtn, () =>
 		pickFiles(".hda,.json,.xlsm,.xlsx", false, files => replacing(() => void openFiles(files))));
-	btn("⚙", "Settings", () => new SettingsModal().open());
+	btn("⚙", "Settings", right.querySelector(".da-theme-select"), () => new SettingsModal().open());
 }
 
 // Drop a .hda or .xlsm anywhere on the page to open it.
