@@ -1190,8 +1190,8 @@
 	user-select: none;
 	white-space: nowrap;
 }
+/* Same color as the other labels: the verse bands already set verses apart. */
 .hda-view .hda-clause.hda-verse-start .hda-ref {
-	color: var(--da-text);
 	font-weight: 700;
 }
 .hda-view .hda-ref:hover {
