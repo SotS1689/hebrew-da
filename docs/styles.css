@@ -1201,6 +1201,9 @@
 	color: var(--da-accent);
 }
 .hda-view .hda-clause.hda-d1 .hda-ref { border-left-color: var(--hda-d1); }
+/* Offline clauses: the same lighter shade as their O level badge. */
+.hda-view .hda-clause:not(.hda-mainline) .hda-ref { border-left-color: color-mix(in srgb, var(--hda-d0) 38%, var(--da-surface)); }
+.hda-view .hda-clause.hda-d1:not(.hda-mainline) .hda-ref { border-left-color: color-mix(in srgb, var(--hda-d1) 38%, var(--da-surface)); }
 .hda-view .hda-verse-input {
 	width: 100%;
 	height: auto;
