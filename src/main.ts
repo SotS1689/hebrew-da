@@ -164,6 +164,14 @@ export default class HebrewDAPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
+	// The header's ⚙️ opens this plugin's page in Obsidian's own Settings.
+	openSettings(): void {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- app.setting isn't in the public API
+		const setting = (this.app as any).setting;
+		setting?.open();
+		setting?.openTabById(this.manifest.id);
+	}
+
 	refreshAllViews(): void {
 		this.app.workspace.getLeavesOfType(VIEW_TYPE_HDA).forEach(leaf => {
 			if (leaf.view instanceof HDAView) leaf.view.refreshTheming();
@@ -248,7 +256,7 @@ class HdaSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Light / dark mode")
-			.setDesc("Auto follows Obsidian's own mode. Also the 🌙/☀️ switch under ⚙️ Settings in the header.")
+			.setDesc("Auto follows Obsidian's own mode. The header's ⚙️ opens this page.")
 			.addDropdown(d => {
 				d.addOption("auto", "Auto (follow Obsidian)").addOption("light", "Light").addOption("dark", "Dark");
 				d.setValue(s.mode).onChange(async v => { s.mode = v as HdaSettings["mode"]; await save(); });

@@ -100,6 +100,9 @@ export interface HdaPluginHost {
 	refreshAllViews(): void;
 	// The web version downloads the file instead of saving into a vault.
 	saveButton?(view: HDAView): void;
+	// The plugin opens its page in Obsidian's Settings; without this (the
+	// web version) the header's ⚙️ opens the view's own Settings dialog.
+	openSettings?(): void;
 	// What the Settings dialog's Hebrew-font reset goes back to.
 	defaultHebrewFont?: string;
 }
@@ -414,8 +417,11 @@ export class HDAView extends TextFileView {
 		});
 		this.button(right, "📖", "da-btn", "Function of Communication (opens at the section for the clause you're working in)", () => this.openReferenceForCurrent());
 		this.button(right, "📷", "da-btn", "Export PNG of the current tab", () => { void this.exportPng(); });
-		// Color theme and light/dark are in here, as in DA-Tool.
-		this.button(right, "⚙️", "da-btn", "Settings (color theme, light/dark, UI size, Hebrew font)", () => this.openSettings());
+		// Color theme and light/dark are in Settings, as in DA-Tool.
+		this.button(right, "⚙️", "da-btn", "Settings (color theme, light/dark, UI size, Hebrew font)", () => {
+			if (this.plugin.openSettings) this.plugin.openSettings();
+			else this.openSettings();
+		});
 		const supportWrap = right.createDiv({ cls: "da-support-wrap" });
 		const support = supportWrap.createEl("button", { cls: "da-btn da-btn-support", attr: { title: "Support this tool (Buy Me a Coffee)" } });
 		// Coffee mug icon, same as DA-Tool's and BibleSearch's Support button.
@@ -1351,7 +1357,7 @@ export class HDAView extends TextFileView {
 		build(body, close);
 	}
 
-	// The header's ⚙️ dialog. The light/dark switch and theme picker have the
+	// The header's ⚙️ dialog (web version only). The light/dark switch and theme picker have the
 	// classes refreshTheming() looks for, so they stay in step with the view.
 	openSettings(): void {
 		const s = this.plugin.settings;
@@ -1371,7 +1377,7 @@ export class HDAView extends TextFileView {
 			theme.addEventListener("change", () => { s.colorTheme = theme.value; this.saveSettingsAndRefresh(); });
 
 			// Light/dark switch, as in DA-Tool (on = light).
-			const modeWrap = row("Light / dark mode", "Starts out following your system or Obsidian.").createDiv({ cls: "hda-mode-switch" });
+			const modeWrap = row("Light / dark mode", "Starts out following your system setting.").createDiv({ cls: "hda-mode-switch" });
 			modeWrap.createSpan({ cls: "hda-mode-icon", text: "🌙" });
 			const modeBtn = modeWrap.createEl("button", { cls: "da-switch", attr: { role: "switch", "aria-label": "Light mode" } });
 			modeBtn.createSpan({ cls: "da-switch-thumb" });
