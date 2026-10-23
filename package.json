@@ -1,6 +1,6 @@
 {
 	"name": "hebrew-da-obsidian",
-	"version": "0.1.11",
+	"version": "0.1.12",
 	"description": "Hebrew prose discourse analysis (text-linguistic clause worksheet) for Obsidian",
 	"private": true,
 	"scripts": {
