@@ -51,8 +51,9 @@ class NewFileModal extends Modal {
 		let titleInput: HTMLInputElement | null = null;
 		if (this.titleValue !== null) {
 			contentEl.createEl("label", { cls: "hda-prompt-label", text: "Title" });
-			titleInput = contentEl.createEl("input", { cls: "hda-prompt-input", type: "text", value: this.titleValue });
-			titleInput.addEventListener("input", () => { this.titleValue = titleInput!.value; });
+			const input = contentEl.createEl("input", { cls: "hda-prompt-input", type: "text", value: this.titleValue });
+			input.addEventListener("input", () => { this.titleValue = input.value; });
+			titleInput = input;
 		}
 		contentEl.createEl("label", { cls: "hda-prompt-label", text: "Folder" });
 		const folderInput = contentEl.createEl("input", { cls: "hda-prompt-input", type: "text", value: this.folderValue, attr: { placeholder: "/ (vault root)" } });
@@ -80,7 +81,7 @@ export default class HebrewDAPlugin extends Plugin {
 	settings: HdaSettings = defaultSettings();
 
 	async onload() {
-		const loaded = await this.loadData();
+		const loaded = (await this.loadData()) as Partial<HdaSettings> | null;
 		const defaults = defaultSettings();
 		this.settings = Object.assign(defaults, loaded, { columns: Object.assign({}, defaults.columns, loaded?.columns) });
 		if (!COLOR_THEMES.some(t => t.id === this.settings.colorTheme)) this.settings.colorTheme = "standard";
@@ -166,8 +167,8 @@ export default class HebrewDAPlugin extends Plugin {
 
 	// The header's ⚙️ opens this plugin's page in Obsidian's own Settings.
 	openSettings(): void {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- app.setting isn't in the public API
-		const setting = (this.app as any).setting;
+		// app.setting isn't in the public API, so describe just the part used here.
+		const setting = (this.app as unknown as { setting?: { open(): void; openTabById(id: string): void } }).setting;
 		setting?.open();
 		setting?.openTabById(this.manifest.id);
 	}
@@ -192,8 +193,7 @@ export default class HebrewDAPlugin extends Plugin {
 
 	private openImport(): void {
 		new NewFileModal(this.app, "Import Excel DA workbooks", null, this.defaultFolder(), (_title, folder) => {
-			const input = document.createElement("input");
-			input.type = "file";
+			const input = createEl("input", { type: "file" });
 			input.accept = ".xlsm,.xlsx";
 			input.multiple = true;
 			input.addEventListener("change", () => { void this.importFiles(Array.from(input.files ?? []), folder); });
