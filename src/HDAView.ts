@@ -100,6 +100,9 @@ export interface HdaPluginHost {
 	refreshAllViews(): void;
 	// The web version downloads the file instead of saving into a vault.
 	saveButton?(view: HDAView): void;
+	// The web version reports usage events to Google Analytics; the plugin
+	// sends nothing.
+	track?(name: string, params?: Record<string, string>): void;
 	// The plugin opens its page in Obsidian's Settings; without this (the
 	// web version) the header's ⚙️ opens the view's own Settings dialog.
 	openSettings?(): void;
@@ -322,6 +325,7 @@ export class HDAView extends TextFileView {
 		callout.addClass("da-open");
 		s.lastShown = Date.now();
 		void this.plugin.saveSettings();
+		this.plugin.track?.("support_callout_shown");
 	}
 
 	private dismissSupportCallout(mode: "acted" | "later" | "forever"): void {
@@ -331,6 +335,7 @@ export class HDAView extends TextFileView {
 		else if (mode === "later") s.maybeLaterCount += 1;
 		else s.acted = true;
 		void this.plugin.saveSettings();
+		if (mode !== "acted") this.plugin.track?.("support_callout_dismiss", { choice: mode });
 	}
 
 	clear(): void {
@@ -431,6 +436,7 @@ export class HDAView extends TextFileView {
 		support.createSpan({ text: "Support" });
 		support.addEventListener("click", () => {
 			window.open(SUPPORT_URL, "_blank");
+			this.plugin.track?.("support_click", { source: "heart" });
 			this.dismissSupportCallout("acted");
 		});
 		this.supportCallout = supportWrap.createDiv({ cls: "da-support-callout", attr: { role: "dialog", "aria-label": "Support this project" } });
@@ -440,6 +446,7 @@ export class HDAView extends TextFileView {
 		const supportActions = this.supportCallout.createDiv({ cls: "da-support-callout-actions" });
 		supportActions.createEl("button", { cls: "da-support-callout-btn da-support-callout-btn-primary", text: "Yes" }).addEventListener("click", () => {
 			window.open(SUPPORT_URL, "_blank");
+			this.plugin.track?.("support_click", { source: "callout" });
 			this.dismissSupportCallout("acted");
 		});
 		supportActions.createEl("button", { cls: "da-support-callout-btn da-support-callout-btn-secondary", text: "Maybe later" }).addEventListener("click", () => this.dismissSupportCallout("later"));

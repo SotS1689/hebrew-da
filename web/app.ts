@@ -53,6 +53,11 @@ const hostApp = {
 	saveSettings: async () => store(SETTINGS_KEY, JSON.stringify(settings)),
 	refreshAllViews: () => { view.refreshTheming(); paintPage(); },
 	saveButton: () => downloadCurrent(),
+	// Google Analytics event, if the gtag script loaded (blockers, offline)
+	track: (name: string, params: Record<string, string> = {}) => {
+		const gtag = (window as any).gtag;
+		if (typeof gtag === "function") gtag("event", name, params);
+	},
 	defaultHebrewFont: WEB_HEBREW_FONT,
 };
 
