@@ -9,7 +9,7 @@ import { StoryBoard } from "./StoryBoard";
 import { FUNCTION_SECTIONS, InstructionBlock, METHOD_INSTRUCTIONS, TOOL_HELP } from "./reference";
 
 export const VIEW_TYPE_HDA = "hebrew-da-view";
-export const SUPPORT_URL = "https://buymeacoffee.com/reformedretrieval";
+export const SUPPORT_URL = "https://buymeacoffee.com/taylordrummond";
 
 // Ribbon / tab icon: a bold vav, the clause connector the method starts from.
 export const HDA_ICON = "hebrew-da-vav";
